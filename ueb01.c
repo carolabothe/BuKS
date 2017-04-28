@@ -1,5 +1,5 @@
 /*ueb01 
-Tugçke Çetinkaya and Carola Bothe
+Tuğçe Çetinkaya and Carola Bothe
 */
 
 

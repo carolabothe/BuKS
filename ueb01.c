@@ -14,22 +14,23 @@ $ . / program 1 2 3 1 1 9
 Ihr Programm muss mit folgenden Compiler-Flags ohne Warnungen und / oder Fehler kompilieren:
 $ gcc −std=c11 −o ueb01.out −Wall −Wextra −pedantic ueb01.c
 */
-//TODO: Fehlerbehandlung
+
 
 #include <stdio.h>
 #include <inttypes.h>
 
-int main(int argc, char *argv[]){
-	int64_t sum = 0;
-    for (int64_t i = 0; i < argc-1; i++){
-    	sum = sum + &argv[i];
+int main(int argc, char* argv[]){
+	int sum = 0;
+    for (int i = 1; i < argc-1; ++i){	//not i=0 because that would be the program itself
+    	sum += (int) strtol(argv[i], (char **)NULL, 10);
+
     }
     char c;
-    if (sum == &argv[argc-1]){
+    if (sum == (int) strtol(argv[argc-1], (char **)NULL, 10)){
     	c = '1';
     }
     else{
     	c = '0';
     }
-    printf("%c\n", c);
+    printf("%c\n",c);
 }

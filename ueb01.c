@@ -20,22 +20,16 @@ $ gcc −std=c11 −o ueb01.out −Wall −Wextra −pedantic ueb01.c
 #include <inttypes.h>
 
 int main(int argc, char *argv[]){
-	/*int sum = 0;
-    for (int i = 0; i < argc-1; ++i){
-    	sum += argv[i];
+	int64_t sum = 0;
+    for (int64_t i = 0; i < argc-1; i++){
+    	sum = sum + &argv[i];
     }
-    char c = '';
-    if (sum == argv[argc-1]){
-    	char c = '1';
+    char c;
+    if (sum == &argv[argc-1]){
+    	c = '1';
     }
     else{
-    	char c = '0';
+    	c = '0';
     }
-    printf("%c", c);
-}
-*/
-//what we did in the tutorial:
-	for(int i=0;i<argc;i++){
-		printf("%s\n",argv[i]);
-	}
+    printf("%c\n", c);
 }

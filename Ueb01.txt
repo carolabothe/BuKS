@@ -1,0 +1,22 @@
+MULTICS = 
+Multiplexed Information and Computing Service
+
+1. Wann wurde das Betriebssystem entwickelt? Wird es noch weiterentwickelt?
+• Weiterentwicklung des CTSS
+• ab 1963 (1) bzw. 1965 (2)
+• zuletzt genutzt 2000 (1,2)
+
+2.Hat das Betriebssystem einen besonderen Anwendungszweck?
+für Großrechner
+
+3.Ist eine spezielle Hardware nötig?
+
+4. Stellt es bestimmte Dienste (eng: services) bereit?
+
+5. Worin hebt es sich von anderen Betriebssystemen ab?
+?in assemblersprache geschrieben –> programmiersprache der zweiten generation/näher an Hardware/direktere Befehle, kein Compiler
+
+Recherche beschreiben: Um einen Überblick zu schaffen: wikipedia. Anschließend prüfen, was Multics selbst über sich sagt (weiterleitung von wikipedias quellen). Schlussendlich Drittquellen wie Foren und und und
+Quellen:
+(1) https://de.wikipedia.org/wiki/Multics 
+(2) http://www.multicians.org/general.html

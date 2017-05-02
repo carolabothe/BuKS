@@ -41,3 +41,38 @@ Quellen:
 (1) https://de.wikipedia.org/wiki/Multics 
 (2) http://www.multicians.org/general.html
 (3) http://searchenterpriselinux.techtarget.com/definition/Multics
+
+
+MULTICS Übung01- Aufgabe 1 
+Tuğçe Çetinkaya
+
+EROS
+
+1.)Wann wurde das Betriebssystem entwickelt? Wird es noch weiterentwickelt? 
+  (When was the operating system developed? Is it still further developed?)
+*EROS, The Extremely Reliable Operating System, began to develop in 1990s and closed in 2005.
+
+2.)Hat das Betriebssystem einen besonderen Anwendungszweck?
+  (Does the operating system have a specific purpose?) 
+*The O.S is capability based system a sophisticated security mechanism,it periodically saves a copy of everything you are doing.
+
+3.)Ist eine spezielle Hardware nötig? (Is a special hardware necessary?) *
+
+4.)Stellt es bestimmte Dienste (eng: services) bereit? 
+   (Does it provide certain services?) 
+*Capability System,Pervasive threading,MicroKernel,Transparent Persistence ,these are certain services that provides it. There are   many advantages like that scheduling,storage allocation and fault handling policies.Also,capability systems (exp:EROS) provide          support for protected subsystems,typed objects and non-hierarchical protection domains.The system merges some very old ideas in   operating systems with new ideas about performance and resource management.
+
+5.)Worin hebt es sich von anderen Betriebssystemen ab? 
+  (What does it stand out from other operating systems?) 
+*EROS is the re-implementation of the concepts of the KeyKOS operating system(based purely on capabilities).
+
+RESOURCES 
+*https://en.wikipedia.org/wiki/EROS_(microkernel)
+*https://books.google.de/books?id=f5q9I0dmrbwC&pg=PA98&lpg=PA98&dq=special+hardware+for+eros&source=bl&ots=k4h-LhshrW&sig=uoSXuDw8DF2BjqsBKKytzOPIcAw&hl=tr&sa=X&ved=0ahUKEwjhmJn0htHTAhWKblAKHWbWCI4Q6AEIRTAE#v=onepage&q=special%20hardware%20for%20eros&f=false
+*https://webcache.googleusercontent.com/search?q=cache:LwpKK0L7snIJ:www.cs.utah.edu/flux/tmp/draft2.ps+&cd=2&hl=tr&ct=clnk&gl=de
+
+
+
+
+
+

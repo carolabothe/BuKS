@@ -8,8 +8,8 @@ Tuğçe Çetinkaya and Carola Bothe
 
 int main(int argc, char* argv[]){
 	int sum = 0;
-    for (int i = 1; i < argc-1; ++i){	//not i=0 because that would be the program itself
-    	sum += (int) strtol(argv[i], (char **)NULL, 10);	//atoi alternative (right one?)
+    for (int i = 1; i < argc-1; ++i){	
+    	sum += (int) strtol(argv[i], (char **)NULL, 10);	//atoi alternative
 
     }
     char c;

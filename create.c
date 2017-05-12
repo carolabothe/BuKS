@@ -1,16 +1,13 @@
 #include <unistd.h>
-//#include <sys/syscall.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>           // sind durch einander gekommen welche Bibiotheken für uns wichtig sind
+#include <fcntl.h>           
 #include <stdlib.h>
 #include <dirent.h>
-//#include <errno.h>
+#include <errno.h>
 #include <sys/sendfile.h>
 #include <string.h>
-
-//  Wir haben die Aufgabe zwei wie ein Kochrezept abgearbeitet jedoch sind viele Funktionen beim (a),(b),(c),(d) kreieren abgeändert worden
-//  damit der Code nicht noch verwirrender wird haben wir nur die Aufbauenden wichtigen Funktionen genommen
 
 // (a)
 
@@ -22,20 +19,20 @@ int delete(char* sourcename,char* targetname){  // delete kriegt 2 Dateinamen bz
                                            // Fehlerbehandlung man sollte den entstehenden error genauer abfangen indem man errno auf die Art des Fehlers prüft
     char* msg = "Datei existiert nicht\n"; // kreieren einen String für write um leichter strlen zu benutzen
     write(STDOUT_FILENO,msg,strlen(msg));  // write braucht den FD STDOUT_FILENO um in die Console zu schreiben, 2 Argument ist der String der ausgegeben werden soll ,3 Argument Länge des String (kriegen wir mit strlen heraus)
-    return EXIT_FAILURE;     // damit wir raus gehen aus dem Code und nicht weiter lesen
+    return 0;     // damit wir raus gehen aus dem Code und nicht weiter lesen
     }
 
   chdir(".ti3_trashcan");   // wechseln ins .ti3 (Mülleimer) Verzeichnis
   int endfd;                // int für FD(Filedistriptor)
-  endfd = open(targetname, O_CREAT | O_RDWR| O_EXCL,00700);  // ordnen endfd den Wert von open zu, O_CREAT Flag heißt falls Ordner mit namen targetname nicht vorhanden wird er kreiert aber ****nur**** dann (aufgrund vom O_EXCL Flag)
-  if (endfd < 0){                                         // falls Fehler geben wir eine Meldung aus
+  endfd = open(targetname,O_CREAT | O_RDWR| O_EXCL,00700);  // ordnen endfd den Wert von open zu, O_CREAT Flag heißt falls Ordner mit namen targetname nicht vorhanden wird er kreiert aber ****nur**** dann (aufgrund vom O_EXCL Flag)
+  if (endfd == -1){                                         // falls Fehler geben wir eine Meldung aus
     char* msg1= "Datei existiert schon im Mülleimer erstmal löschen bitte\n";   // Fehlerbehandlung errno näher analysieren bzw überhaupt
     write(STDOUT_FILENO,msg1,strlen(msg1));
     close(endfd);                                           // schließen unseren geöffneten Ordner um Fehler zu vermeiden
-    return EXIT_FAILURE;
+    return 0;
     }
                                                            // bis jetzt leere Datei kopiert in den Mülleimer // es fehlt noch ,Inhalt kopieren und die Datei im Verzeichnis zu löschen
-  sendfile(endfd,startfd,NULL,1024);                        // sendfile read,write Funktion in einem schreiben von der Datei im Verzeichnis in die kopierte im Mülleimer , NUll (OFFSET) , 1024 := lesen und schreiben 1024 Zeichen
+  sendfile(endfd,startfd,NULL,100);                        // sendfile read,write Funktion in einem schreiben von der Datei im Verzeichnis in die kopierte im Mülleimer , NUll (OFFSET) , 100 := lesen und schreiben 100 Zeichen
   chdir("..");                                             // springen vom Mülleimer wieder ein Verzeichnis zurück
   unlink(sourcename);                                       //löschen die alte Datei
   char* info = "Die Datei wurde in den Papierkorb geschoben\n";
@@ -51,8 +48,8 @@ int delete(char* sourcename,char* targetname){  // delete kriegt 2 Dateinamen bz
 
 
 int create_trash(){
-                                      // erstellen den Papierkorb
-  mkdir(".ti3_trashcan",00700);
+  int dir;                                  // erstellen den Papierkorb
+  dir = mkdir(".ti3_trashcan",00700);
   //if (dir == -1){
   //  if(errno == EEXIST){                                      // Fehlernachricht falls der Papierkorb schon existiert haben wir aufgehoben weil sie genervt hat
       //char* msg2 = "Der Papierkorb existiert schon \n";
@@ -66,7 +63,7 @@ int create_trash(){
 
 
 
-int list(){                       // soll die  Dateien im Papierkorb auflisten
+int listet(){                       // soll die  Dateien im Papierkorb auflisten
   DIR* dirzeiger;                   // Pointer vom Verzeichnis
   struct dirent* dirEigenschaften;  // Verzeichnis struct der durch readdir weiterhilft mit bestimmten Eigenschaften
   dirzeiger = opendir (".");        // "." ist der aktuelle Ordner ,dirzeiger kriegt den aktuellen Zeigen vom Verzeichnis Typ DIR*
@@ -113,9 +110,9 @@ int list(){                       // soll die  Dateien im Papierkorb auflisten
    return 0;
  }
 
-int finalydelete(char* killeddata){
+int superdelete(char* killeddata){
   chdir(".ti3_trashcan");
-  int killd;                                            // sehr ähnlich wie delete nur leichter gemacht zum gucken, ob die Datei vorhanden falls ja löschen mit unlink
+  int killd;                                            // sehr ähnlich wie delete nur leichter gehen in Mülleimer schauen ob Datei vorhanden falls ja löschen wir ise mit unlink
   killd = open(killeddata,O_RDWR,00700);
   if(killd < 0){
     char* msg6 = "Die Datei existiert nicht im Müll um sie entgültig zu löschen\n";
@@ -129,6 +126,13 @@ int finalydelete(char* killeddata){
    return 0;
 
 }
+
+
+
+
+
+
+
 
 
 int main (int argc, char* argv[] ){

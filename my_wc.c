@@ -4,7 +4,11 @@
 #include <stdio.h>
 
 // gibt Anzahl der Zeilen, Wörter und Bytes aus
-int my_wc(char *fname){
+int main(int argc, char *argv[]){
+	if (argc != 2){
+		printf("Please enter exactly one argument: the file name";
+		return 1;
+	}
 
 	return 0;
 }

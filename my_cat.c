@@ -1,21 +1,37 @@
-// Ueb03 zu BKS
-//Etienne Jentzsch und Carola Bothe
-
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <sys/types.h>
 
-//gibt Inhalt der Datei aus
-int main(int argc, char *argv[]){
-	if (argc != 2){
-		printf("Please enter exactly one argument: the file name.\n");
-		return 1;
+int readout(char *datei){
+	FILE *toread = fopen(datei, "r");
+	int lesezeichen;
+	while(1){
+		lesezeichen = fgetc(toread);
+		if(feof(toread)){
+			break;
+		}
+		fprintf(stdout, "%c", lesezeichen);
 	}
-	char *fname = argv[1];
-	FILE *data=fopen(fname, "r");
-	if (data == NULL){
-     	printf("Cannot open the file.\n");
-      	return 1;
-    }
-    	printf("%s\n",data); //finde das richtig %irgendwas nicht 
-	fclose(data);
+	fclose(toread);
 	return 0;
+}
+
+int main(int argc, char *argv[1]){
+	int i = 1;
+	if(argc < 1){
+		fprintf(stderr, "%s", "Falsche Eingabe!\n");
+	}
+	for(int j = 0; j <= argc-1; j++){
+	pid_t pid = fork();
+	readout(argv[i]);
+	while(1){
+		if(pid == 0){
+	waitpid(pid, NULL, 0);
+	break;
+		}
+	}
+	return 0;
+}
 }

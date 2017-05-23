@@ -1,0 +1,30 @@
+Übung 4  [TI-3] BuKs
+Etienne Jentzsch / Carola Bothe
+
+Aufgabe1)
+1.
+a) Trashing :
+Thrashing oder auch Seitenflattern genannt geschieht, wenn ein Prozess nicht genug Seiten hat und 
+dadurch die Seiten-. Fehlerrate zu hoch wird und damit nur noch mit Ein- und Auslagern von Seiten beschäftigt ist.
+
+b) TLB :
+Der TLB (Translation Lookaside Buffer/Übersetzungspuffer) cachiert die zuletzt verwendeten Seitentabelleneinträge 
+und ist eine funktionale Einheit der Speicherverwaltung.
+
+c) MMU :
+Die MMU (Memory Management Unit/Speicherverwaltungseinheit) übernimmt die Speicherverwaltung von Arbeistspeichern,also
+eine Hardwarekomponente eines Computers und rechnet virtuelle Adressen in physische Adressen um.
+
+d) physikalische Adresse :
+Jede physikalische Adresse existiert im Netz nur einmal und kann auch vom Systemadministrator nicht verändert werden
+
+e) logische (auch virtuelle) Adresse :
+Die logische Adresse hingegen definiert der Administrator selbst.
+f) Adressraum :
+Als Adressraum wird eine Menge von Adressen bezeichnet, die sich jede einheitlich und eindeutig adressieren lässt.
+
+2. Erläutern Sie die Problematik von interner und externer Fragmentierung an Hand des Beispiels aus der
+Vorlesung. Wie löst Paging diese?
+
+3. Ein Programm, das direkt nach dem Starten die Adresse der Main-Funktion ausgibt und dann in eine
+Endlosschleife verfällt, wird dreimal parallel gestartet. Was wird ausgegeben und warum?

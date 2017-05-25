@@ -1,4 +1,6 @@
 #include <inttypes.h>
+#include <sys/types.h> //für size_t
+
 //#ifindef MEMORY_H		//if not defined –> header wird nur einmal eingezogen!
 	#define MEMORY_H
 	#define MEM_SIZE 10240

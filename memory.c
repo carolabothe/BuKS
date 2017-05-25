@@ -5,7 +5,8 @@
 #include <sys/types.h> //für size_t
 
 //Fragen:
-//1. Woher kennt man größe der metadaten? Bzw. wie greift man auf sie zu?
+//1. Woher kennt man größe der metadaten?
+//2. Wie speichert man die inforationen nur in memory? Bzw. wenn nicht, wie übertragt man die infos auf die anderen Funktionen?
 
 char memory[MEM_SIZE];	//definiert in header
 int32_t bcount; //anzahl der blöcke
@@ -23,6 +24,7 @@ void memory_init(){
 	m->ds=0;
 	m->size=m->ds;	
 	bcount = 1;	
+	memory = (char [MEM_SIZE])m;
 }
 
 
@@ -38,9 +40,9 @@ void* memory_allocate(size_t byte_count){ //suche nach freiem Speicher
 		}
 	}
 	
-	return n;
-	printf("Es gibt freien Speicherplatz an der Stelle%s des Speichers.\n",n);
+	printf("Es gibt freien Speicherplatz an der Stelle %s des Speichers.\n",n);
 	bcount ++;
+	return n;
 }
 
 
@@ -50,7 +52,7 @@ void memory_free(void* pointer){}
 void memory_print(){
 	printf("Der Zustand des Speichers ist wie folgt:\n\t\tGröße\tFrei\tZeigt auf\n");
 	/*for (int16_t i=0; i<bcount; i++){
-		printf("Block %i:\t%i\t%i\t&h",i,,(&next-&b),next); 
+		printf("Block %i:\t%i\t%i\t&h",i,(&memory[i]-&next),(&next-&b),next); 
 	}*/
 	printf("Insgesamt: \t%i\n", MEM_SIZE);
 	for (int32_t j=0; j<MEM_SIZE; j++){printf("%c",memory[j]);}

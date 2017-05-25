@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[]){
 	int64_t x = 1;
-	int64_t* px = &x;	//& vor x heißt, wir wollen nicht adresse sondern inhalt vom pointer x
+	int64_t* px = &x;	//& vor x, da wir dem pointer die Adresse und nicht den Wert zuweisen wollen
 	int32_t y = 2;
 	int32_t* py = &y;	
 	int16_t z = 3;

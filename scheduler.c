@@ -46,29 +46,17 @@ void rr(struct Process* head) {
 }
 
 //first come first serve: prozesse durchgehen und gucken welcher gerade läuft, wenn einer noch auf running ist dann weiterlaufen lassen sonst nach process mit längster wartezeit suchen und den auf running setzen
-void fcfs(struct Process* head) {
-	struct Process* current = head->next;
-	int64_t counter = 0;
-	uint64_t w = head->cycles_waited;
-	struct Process* jetztdran = head;
-	while(current != head){
-		if(current->state == RUNNING){
-			current->cycles_todo --;
-			current->cycles_done ++;
-			counter++;
-			break;
+void fcfs(struct Process* head){
+	Process* current = head;
+	while(current->next != head){
+		if(current->next->cycles_todo != 0){
+			current->next->state = RUNNING;
+			current = head->prev;
 		}
-		if(counter>1){
-			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt?
-		}
-		if(current->cycles_waited > w){
-			w = current->cycles_waited;
-			jetztdran = current;
-		}
+		else{
+		current->next->state = DEAD;
 		current = current->next;	
-	}	
-	if(counter==0){
-		jetztdran->state = RUNNING;
+		}
 	}
 }
 

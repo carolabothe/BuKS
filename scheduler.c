@@ -40,17 +40,17 @@ void rr(struct Process* head) {
 			else {
 				current->state=READY;
 			}
-		current = current->next;	
 		}		
+		current = current->next;	
 	}	
 }
 
 //first come first serve: prozesse durchgehen und gucken welcher gerade läuft, wenn einer noch auf running ist dann weiterlaufen lassen sonst nach process mit längster wartezeit suchen und den auf running setzen
 void fcfs(struct Process* head) {
-	Process* current = head->next;
+	struct Process* current = head->next;
 	int64_t counter = 0;
 	uint64_t w = head->cycles_waited;
-	struct Process* jetztdran;
+	struct Process* jetztdran = head;
 	while(current != head){
 		if(current->state == RUNNING){
 			current->cycles_todo --;
@@ -77,7 +77,7 @@ void spn(struct Process* head) {
 	Process* current = head->next;
 	int64_t counter = 0;
 	uint64_t sertime = head->cycles_todo;
-	struct Process* jetztdran;
+	struct Process* jetztdran = head;
 	while(current != head){
 		if(current->state == RUNNING){
 			current->cycles_todo --;
@@ -101,13 +101,13 @@ void spn(struct Process* head) {
 
 
 //highest response ratio next
-void hrrn(struct Process* head) {
+void hrrn(struct Process* head){
 	Process* current = head->next;
 	int64_t counter = 0;
-	uint64_t hrrn = (head->cycles_waited + head->cycles_todo) / head->cycles_todo;
-	struct Process* jetztdran;
+	uint64_t hrrn = 0; 
+	struct Process* jetztdran = head;
 	while(current != head){
-		if(current->state == RUNNING){
+		/*if(current->state == RUNNING){
 			current->cycles_todo --;
 			current->cycles_done ++;
 			counter++;
@@ -115,12 +115,18 @@ void hrrn(struct Process* head) {
 		}
 		if(counter>1){
 			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt? 
+		}*/
+		if(current->cycles_todo == 0){
+			current = current->next;
+			break;				
 		}
-		uint64_t currenthrrn = (current->cycles_waited + current->cycles_todo) / current->cycles_todo;
-		if(currenthrrn > hrrn){
-			hrrn = currenthrrn;
-			jetztdran = current;
-		}
+		else{
+			uint64_t currenthrrn = (current->cycles_waited + current->cycles_todo) / current->cycles_todo;
+			if(currenthrrn > hrrn){
+				hrrn = currenthrrn;
+				jetztdran = current;
+			}
+		}	
 		current = current->next;	
 	}	
 	if(counter==0){

@@ -21,6 +21,7 @@
 #define CYAN	"\033[36m"
 #define NORMAL	"\033[39m"
 
+//LIste von Prozessen mit arrival und service time:
 uint64_t processes[NUM_PROCESSES][2] = {{0, 3}, {2, 7}, {4, 1}, {6, 5}};
 
 void (*sched_func[ALGO_NUM])(Process*) = {
@@ -57,15 +58,15 @@ int main(void) {
 			for(size_t pi=0; pi<NUM_PROCESSES; pi++) {
 				if(processes[pi][0] == tick) {
 					Process* new_process = malloc(sizeof(Process));
-					new_process->pID = pi;
+					new_process->pID = pi; //weisen neuem prozess Prozessnummer als pID zu
 					
 					new_process->cycles_done = new_process->cycles_waited = 0;
 					new_process->cycles_todo = processes[pi][1];
 					new_process->state = READY;
 					
 					new_process->prev = head->prev;
-					new_process->next = head;
-					head->prev->next = new_process;
+					new_process->next = head; //letzter prozess zeigt immer auf anfang
+					head->prev->next = new_process; //next vom vorgänger von head zeigt auf neuen prozess??
 					head->prev = new_process;
 					
 					ticks_todo += processes[pi][1];
@@ -86,13 +87,13 @@ int main(void) {
 				}
 			
 				printf(
-					MAGENTA "%"PRIu64" (%"PRIu64", %"PRIu64", %"PRIu64"): "\
+					MAGENTA "%"PRIu64" (%"PRIu64", %"PRIu64", %"PRIu64"): "	
 					NORMAL,
 					current->pID,
 					current->cycles_done,
 					current->cycles_todo,
 					current->cycles_waited
-				);
+				);//PRIu64 für PRInt uint64_t
 	
 				if(current->state == DEAD) {
 					printf(RED "DEAD\t" NORMAL);

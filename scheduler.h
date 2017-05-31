@@ -13,7 +13,7 @@ enum ProcessState {
 	RUNNING = 1,	// zuletzt gelaufener Prozess
 	READY = 2		// Prozess bereit
 };
-typedef enum ProcessState ProcessState;
+typedef enum ProcessState ProcessState; //sorgt dafür dass wir enum weglassen können: ProcessState ist ein Alias für enum ProcessState
 
 struct Process {
 	uint64_t pID;				// Prozess ID

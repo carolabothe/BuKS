@@ -23,12 +23,12 @@
 #include "scheduler.h"
 
 
-//round robin
+//round robin:
 void rr(struct Process* head) {
 
 }
 
-//first come first serve (simple queue)
+//first come first serve: prozesse durchgehen und gucken welcher gerade läuft, wenn einer noch auf running ist dann weiterlaufen lassen sonst nach process mit längster wartezeit suchen und den auf running setzen
 void fcfs(struct Process* head) {
 
 }

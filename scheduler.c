@@ -93,62 +93,87 @@ void fcfs(struct Process* head){
 
 //shortest process next
 void spn(struct Process* head) {
-	Process* current = head->next;
-	int64_t counter = 0;
-	uint64_t sertime = head->cycles_todo;
-	struct Process* jetztdran = head;
-	while(current != head){
-		if(current->state == RUNNING){
-			current->cycles_todo --;
-			current->cycles_done ++;
-			counter++;
-			break;
+	uint64_t readycounter = 0;
+	uint64_t runcounter = 0;
+	Process* runningP = head;
+	uint64_t sertime = 10000; //brauchen großen Wert...
+	struct Process* shortestP = head;
+	//bestimmen wie viele programme ready sind und welches läuft, wenn eins läuft
+	for(Process* p = head->prev;p != head;p=p->prev){	//rückwärts damit erster READY Prozess aus Schlange genommen wird
+		if(p->state ==READY){
+			readycounter ++;
+			if(p->cycles_todo <= sertime){
+				sertime = p->cycles_todo;
+				shortestP = p;
+			}	
 		}
-		if(counter>1){
-			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt? 
+		if(p->state == RUNNING){
+			runcounter ++;
+			runningP = p;
 		}
-		if(current->cycles_todo < sertime){
-			sertime = current->cycles_todo;
-			jetztdran = current;
-		}
-		current = current->next;	
-	}	
-	if(counter==0){
-		jetztdran->state = RUNNING;
 	}
+	if(runcounter==0){
+		if(readycounter!=0){//wenigstens ein READY Prozess
+			shortestP->state = RUNNING;
+		}
+	}
+	else if (runcounter == 1){
+		if(runningP->cycles_todo == 0){
+			runningP->state = DEAD;
+			if(readycounter!=0){
+				shortestP->state = RUNNING;
+			}
+		}
+		else{
+			runningP->state=RUNNING; //nur für Klarheit, ist ja schon RUNNING eigentlich
+		}
+	}
+	else{
+		fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //sollte nicht passieren...
+	}
+
 }
 
 
 //highest response ratio next
 void hrrn(struct Process* head){
-	Process* current = head->next;
-	int64_t counter = 0;
-	uint64_t hrrn = 0; 
-	struct Process* jetztdran = head;
-	while(current != head){
-		/*if(current->state == RUNNING){
-			current->cycles_todo --;
-			current->cycles_done ++;
-			counter++;
-			break;
-		}
-		if(counter>1){
-			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt? 
-		}*/
-		if(current->cycles_todo == 0){
-			current = current->next;
-			break;				
-		}
-		else{
-			uint64_t currenthrrn = (current->cycles_waited + current->cycles_todo) / current->cycles_todo;
+	uint64_t readycounter = 0;
+	uint64_t runcounter = 0;
+	Process* runningP = head;
+	uint64_t hrrn = 0;
+	struct Process* hrrnP = head;
+	//bestimmen wie viele programme ready sind und welches läuft, wenn eins läuft
+	for(Process* p = head->prev;p != head;p=p->prev){	//rückwärts damit erster READY Prozess aus Schlange genommen wird
+		if(p->state ==READY){
+			readycounter ++;
+			uint64_t currenthrrn = (p->cycles_waited + p->cycles_todo) / p->cycles_todo;
 			if(currenthrrn > hrrn){
 				hrrn = currenthrrn;
-				jetztdran = current;
+				hrrnP = p;
+			}	
+		}
+		if(p->state == RUNNING){
+			runcounter ++;
+			runningP = p;
+		}
+	}
+	if(runcounter==0){
+		if(readycounter!=0){//wenigstens ein READY Prozess
+			hrrnP->state = RUNNING;
+		}
+	}
+	else if (runcounter == 1){
+		if(runningP->cycles_todo == 0){
+			runningP->state = DEAD;
+			if(readycounter!=0){
+				hrrnP->state = RUNNING;
 			}
-		}	
-		current = current->next;	
-	}	
-	if(counter==0){
-		jetztdran->state = RUNNING;
+		}
+		else{
+			runningP->state=RUNNING; //nur für Klarheit, ist ja schon RUNNING eigentlich
+		}
+	}
+	else{
+		fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //sollte nicht passieren...
 	}
 }

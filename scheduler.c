@@ -19,27 +19,111 @@
  */
 
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "scheduler.h"
 
 
 //round robin:
 void rr(struct Process* head) {
-
+	Process* current = head->next;
+	while(current != head){
+		if(current->state == RUNNING){
+			if(current->next == head){	//head ist Dummy und soll nicht dran sein
+				current->next->next->state = RUNNING;
+			}
+			else{
+				current->next->state = RUNNING;
+			}
+			if(current->cycles_todo == 0){
+				current->state = DEAD;
+			}
+			else {
+				current->state=READY;
+			}
+		current = current->next;	
+		}		
+	}	
 }
 
 //first come first serve: prozesse durchgehen und gucken welcher gerade läuft, wenn einer noch auf running ist dann weiterlaufen lassen sonst nach process mit längster wartezeit suchen und den auf running setzen
 void fcfs(struct Process* head) {
-
+	Process* current = head->next;
+	int64_t counter = 0;
+	uint64_t w = head->cycles_waited;
+	struct Process* jetztdran;
+	while(current != head){
+		if(current->state == RUNNING){
+			current->cycles_todo --;
+			current->cycles_done ++;
+			counter++;
+			break;
+		}
+		if(counter>1){
+			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt?
+		}
+		if(current->cycles_waited > w){
+			w = current->cycles_waited;
+			jetztdran = current;
+		}
+		current = current->next;	
+	}	
+	if(counter==0){
+		jetztdran->state = RUNNING;
+	}
 }
 
 //shortest process next
 void spn(struct Process* head) {
-
+	Process* current = head->next;
+	int64_t counter = 0;
+	uint64_t sertime = head->cycles_todo;
+	struct Process* jetztdran;
+	while(current != head){
+		if(current->state == RUNNING){
+			current->cycles_todo --;
+			current->cycles_done ++;
+			counter++;
+			break;
+		}
+		if(counter>1){
+			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt? 
+		}
+		if(current->cycles_todo < sertime){
+			sertime = current->cycles_todo;
+			jetztdran = current;
+		}
+		current = current->next;	
+	}	
+	if(counter==0){
+		jetztdran->state = RUNNING;
+	}
 }
+
 
 //highest response ratio next
 void hrrn(struct Process* head) {
-
+	Process* current = head->next;
+	int64_t counter = 0;
+	uint64_t hrrn = (head->cycles_waited + head->cycles_todo) / head->cycles_todo;
+	struct Process* jetztdran;
+	while(current != head){
+		if(current->state == RUNNING){
+			current->cycles_todo --;
+			current->cycles_done ++;
+			counter++;
+			break;
+		}
+		if(counter>1){
+			fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //geht das überhaupt? 
+		}
+		uint64_t currenthrrn = (current->cycles_waited + current->cycles_todo) / current->cycles_todo;
+		if(currenthrrn > hrrn){
+			hrrn = currenthrrn;
+			jetztdran = current;
+		}
+		current = current->next;	
+	}	
+	if(counter==0){
+		jetztdran->state = RUNNING;
+	}
 }
-

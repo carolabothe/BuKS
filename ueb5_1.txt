@@ -1,0 +1,34 @@
+a)
+	P1		P2		P3		P4
+0	new		
+1	ready	new		
+2	running	ready	new
+3	running	ready	ready	new
+4	running	ready	ready	ready
+5	running	ready	ready	ready
+6	waiting	running	ready	ready
+7	waiting	running	ready	ready
+8	waiting	killed	running	ready
+9	waiting	killed	blocked	ready
+10	waiting	killed	blocked	ready
+11	ready	killed	waiting	running
+12	ready	killed	waiting	running
+13	ready	killed	waiting	running
+14	ready	killed	waiting	running
+15	ready	killed	waiting	running
+16	running	killed	ready	terminated
+17	running	killed	ready	terminated
+18	running	killed	ready	terminated
+19	running	killed	ready	terminated
+20	termin.	killed	running	terminated
+21	termin.	killed	running	terminated
+22	termin.	killed	running	terminated
+23	termin.	killed	termin.	terminated
+
+b) Zum Zeitpunkt 9 und 10 befindet sich P3 im Zustand busy waiting, da es auf den Drucker wartet, 
+der von P1 belegt wird und somit den Prozessor blockiert.
+
+c) busy waiting ist dafür ein Beispiel, oder wenn sich Prozesse im Deadlock befinden, 
+also alle Prozesse auf ein Betriebsmittel vom anderen Prozess warten und sich so ein Kreis 
+bildet, der ohne Abbruch nicht aufgelöst werden kann. Unter Unix steht zum Abbruch 'kill' 
+zur Verfügung: kill [Optionen] ProzessID

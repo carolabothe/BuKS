@@ -1,3 +1,5 @@
+Übung 5 Aufgabe 1
+Etienne Jentzsch, Carola Bothe
 a)
 	P1		P2		P3		P4
 0	new		

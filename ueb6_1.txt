@@ -1,0 +1,59 @@
+1. I/O, DMA
+I/O steht für Input/Output und bezeichnet die Kommunikation des Systems mit der Außenwelt 
+z.B Benutzern und Aktionen zum Lesen und Schreiben von Daten. (https://de.wikipedia.org/wiki/Eingabe_und_Ausgabe)
+DMA (Direct Memory Access) ist eine I/O Art, bei der die Aufgaben 
+ausprogrammiert werden, indem sie an einen DMA Controller/module delegiert werden. Dieser besteht aus 
+eine for-loop in extra Hardware also ein einfacher Prozess, der die Daten Stück für Stück überträgt. 
+Sobald alle Daten übertragen sind, schickt der DMA-Controller einen Interrupt an den Prozessor.
+(Quelle: VL Folie 6.8f und Mitschrift)
+
+2. I/O Buffering
+Die Raten ein- und ausgelesener Daten müssen zwar im Mittel gleich groß sein, können aber 
+zwischenzeitlich schwanken. I/O Buffering sorgt mit einem oder heutzutage mehreren Puffern
+dafür, dass dies nicht zu Problemen führt. Diese Puffer sind Teile des Hauptspeichers, auf 
+denen zwischenzeitlich Daten abgelegt werden und die vom Betriebssystem verwaltet werden.
+(Quelle: VL Folie 6.12 und Mitschrift) 
+
+3. RAID(redundant array of independent/inexpensive disks)
+Festplatten, besonders günstigere, sind sehr anfällig und gehen schnell kaputt. 
+RAID ist eine Methode bei der man eine Festplatte mehr nutzt (häufig 5 statt 4), als man braucht und die 
+Informationen so redundant speichert, dass falls eine Festplatte ausfällt, deren Inhalt 
+durch die anderen wiederhergestellt werden kann. Das Betriebssystem sieht die vielen 
+Festplatten als eine logische Einheit. (Unterschied level 4 und 5?)
+(Quelle: VL Folien 6.31,32 und Mitschrift) 
+
+4. Tree-Structured Directory
+Diese Dateistruktur nennt man auch hierarchisch, da es ein master/root Verzeichnis gibt mit 
+Unterverzeichnissen. Jedes Verzeichnis/jeder Ordner kann Dateien sowie weitere Ordner beinhalten
+und einige Betriebssystem haben auch mehrere Bäume mit verschiedenen master Verzeichnissen.
+Man kann eine Datei mit ihrem Pfad vom master/root Verzeichnis verorten, oder aber auch 
+ausgehend vom momentanen Arbeitsverzeichnis (Current Working Directory CWD).
+(Quelle: VL Folien 6.59,60)
+
+5. Virtual File System (VFS)
+The virtual file system in Linux is a layer between the kernel and the file system code that
+manages all the different file systems that are mounted.
+The real file systems are either built into the kernel itself or are built as loadable modules.
+(Quelle: VL Folien 6.93)
+
+6. Indexed Allocation
+Dateien werden in Blöcke zerlegt und so auf der Festplatte gespeichert. Um zu wissen, 
+welche Blöcke zu welcher Datei gehören, wird eine file allocation table (FAT) angelegt.
+Indexed allocation ist ein Kompromiss zwischen chained und contiguous allocation, denn 
+die FAT Tabelle enthält einen index für jede Datei, der einen Eintrag für jeden der Datei 
+zugehörigen Block hat. Dadurch kennt der Schreib-Lese-Kopf der Festplatte jeden index und 
+kann diese sinnvoll sortieren, sodass unnötiges, zeitaufwendiges Platzieren des Kopfes vermieden wird.
+(Quelle: VL Folien 6.68,70 und Mitschrift)
+
+7. Inode
+Bei UNIX werden all Arten von Dateien (Ordner sind auch Dateien) vom Betriebssystem über 
+inodes verwaltet. Diese Kontrollstruktur speichert alle wesentlichen Infos für eine Datei wie z.B. 
+Benutzerkennung (Rechte), Größe, Zugriffsdaten (wann zuletzt geöffnet, modifiziert...).
+Ein aktiver inode ist immer mit genau einer Datei assoziiert, die von dem inode kontrolliert wird.
+Während Dateien jedoch unterschiedlich groß sein lönnen, haben inodes immer eine fest Länge (128 Byte).
+(Quelle: VL Folien 6.83,94)
+
+
+b) Informieren Sie sich über die Dateisysteme NTFS und ext4. Arbeiten Sie die wesentlichen Unterschiede
+heraus und nennen Sie Vor- bzw. Nachteile. Welches Dateisystem bevorzugen Sie?
+Benutzen Sie hier ausschließlich Primärliteratur.

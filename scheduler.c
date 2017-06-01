@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include "scheduler.h"
 
+//Bearbeiter: Etienne Jentzsch, Carola Bothe
 
 //round robin:
 void rr(struct Process* head) {
@@ -65,14 +66,21 @@ void rr(struct Process* head) {
 			runningP->state=RUNNING; //brauchen wir eig nicht da schon der Fall...		
 		}
 	}
-	else{ //mehrere wartende READY Programme
+	else{ //mehrere wartende READY Programme		
+		//setzen status vom vorher laufenden Programm
 		if(runningP->cycles_todo == 0){
 			runningP->state = DEAD;
 		}
 		else {
 			runningP->state=READY;	
 		}
-		readyP->state = RUNNING;	//readyP sollte automatisch erstes sein wegen rückläufiger schleife oben
+		//finden nächstes READY Programm
+		for(Process* p = runningP->next; p != runningP; p=p->next){
+			if (p->state==READY){
+				p->state = RUNNING;
+				break;
+			}
+		}
 	}
 }
 
@@ -143,7 +151,7 @@ void hrrn(struct Process* head){
 	uint64_t hrrn = 0;
 	struct Process* hrrnP = head;
 	//bestimmen wie viele programme ready sind und welches läuft, wenn eins läuft
-	for(Process* p = head->prev;p != head;p=p->prev){	//rückwärts damit erster READY Prozess aus Schlange genommen wird
+	for(Process* p = head->next;p != head;p=p->next){	
 		if(p->state ==READY){
 			readycounter ++;
 			uint64_t currenthrrn = (p->cycles_waited + p->cycles_todo) / p->cycles_todo;
@@ -177,3 +185,41 @@ void hrrn(struct Process* head){
 		fprintf(stderr,"Fehler: Zwei Prozesse laufen gleichzeitig."); //sollte nicht passieren...
 	}
 }
+
+/* b) Testfälle
+{{0, 2}, {0, 2}, {0, 2}, {0, 2}}
+Illustriert schön, wie rr einmal jeden Prozess laufen lässt und dann zum nächsten geht. 
+fcfs, spn und hrrn machen alle das selbe und zwar nacheinander alle Prozesse zu ende laufen lassen, 
+da die Prozesse alle gleich lang sind und alle zum gleichen Zeitpunkt kommen und daher auch alle gleich lange warten.
+{{0, 3}, {2, 6}, {4, 4}, {6, 5}, {8, 2}}
+zeigt den Unterschied zwischen spn und hrrn. Bei Tick 9 wird bei spn zuerst der 5. Prozess ausgewählt da er nur
+2 Zyklen lang ist und nicht 4 wie Prozess 3 (ID 2). Hingegen wählt hrrn Prozess 3, da sein hrrn = 6+4/4 = 2.5 und 
+damit größer ist als hrrn(p5) = 1+2/2 = 1.5 .Dies zeigt, dass längere Prozesse bei hrrn weniger benachteiligt werden.
+fcfs geht wieder Stumpf alle Prozesse der Reihe nach durch, wodurch der 5. kurze Prozesse 10 Ticks warten muss.
+{{0, 8}, {1, 1}, {2, 4}, {6, 2}}
+Zeigt nochmal schön die Unterschiede:
+Algo	pID		kommt bei 	Fertig bei 	#Wartezyklen
+rr		0		0			15			7
+		1		1			2			0
+		2		2			10			4
+		3		6			11			3
+								gesamt:	14
+								
+fcfs	0		0			8			0
+		1		1			9			7
+		2		2			13			7
+		3		6			15			7
+								gesamt:	21
+
+spn		0		0			8			0
+		1		1			9			7
+		2		2			15			9
+		3		6			11			3
+								gesamt:	19
+
+hrrn	0		0			8			0
+		1		1			9			7
+		2		2			13			7
+		3		6			15			7
+								gesamt: 21
+*/

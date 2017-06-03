@@ -1,0 +1,95 @@
+﻿Übung 3   [TI-3] BuKs
+Etienne Jentzsch / Carola Bothe
+
+Aufgabe1
+1. Was ist der PCB? Welche Einträge hat er und wozu dienen diese?
+Einen Eintrag nennt man Prozesskontrollblock (PCB). Pro laufenden Prozess gibt es einen Eintrag.
+Der Prozesskontrollblock beinhaltet Informationen über den Zustand des Prozesses, seinen Befehlszähler(PC,Program-Counter),
+CPU-Register, seinen Stackpointer(SP) sowie seine Speicherbelegung und den Zustand seiner geöffneten Dateien.
+Weitere Inhalte im Datensatz sind Scheduling- und Verwaltungsinformationen sowie alle Informationen, 
+welche abgespeichert werden müssen, wenn der Prozess vom Zustand "aktiv" in die Zustände "bereit" oder
+"blockiert" übergeht, um ein nahtloses Weiterlaufen nach der Unterbrechung zu garantieren.
+
+Diese Unterbrechungen sind aus zwei Gründen erforderlich: Einerseits möchte der Benutzer ein hohes Maß 
+an Parallelität(Also mehrere Prozesse gleichzeitig). Andererseits ist die Anzahl der laufenden Programme (Prozesse) viel größer als die Anzahl
+verfügbarer Prozessoren (auch bei Mehrkern-Prozessoren). Die Prozesstabelle ist also eine vom Betriebssystem
+gepflegte Datenstruktur, um Laufzeit-Unterbrechungen bei Prozessen durchführen zu können.
+Unter Linux werden Prozesskontrollblöcke durch den C-struct task_struct repräsentiert.
+
+
+Also In einem Prozesskontrollblock fasst das Betriebssystem alle zu einem einzelnen Prozess gehörenden 
+Informationen zusammen.Sobald also ein neuer Prozess erzeugt wird, legt das Betriebssystem dafür einen
+Prozesskontrollblock als Verwaltungsstruktur an. Für jeden Prozess existiert somit ein eigener PCB.
+
+Quellen: Vorlesungsfolien / https://de.wikipedia.org/wiki/Prozesstabelle
+
+
+2. Grenzen Sie Prozess und Thread voneinander ab. Was ist ein Task?
+Thread Control Block (TCB) ist eine Datenstruktur im Betriebssystemkernel, die Informationen 
+enthält, die für die Verwaltung benötigt werden.
+
+Beispiele für Informationen, die in einem TCB enthalten sind:
+
+    Thread Identifier: Unique id (tid) ist jedem neuen Thread zugeordnet
+    Stack-Pointer: Punkte auf dem Thread-Stack in den Prozess
+    Programm zähler / Thread-Registerwerte
+    Zustand des Fadens (läuft, bereit, warten, starten, fertig)
+    Zeiger auf den Prozesssteuerblock (PCB) des Prozesses, auf dem der Thread lebt
+
+Der Thread Control Block fungiert als Bibliothek von Informationen über die Threads in einem System.
+Spezifische Informationen werden im Block gespeichert, der wichtige Informationen über jeden Prozess
+anzeigt. Damit sieht es so aus, dass alle Prozesse gleichzeitig ablaufen. Dies ist aber
+natürlich nicht möglich, da pro CPU immer nur ein Task(wird später erklärt von uns) ausgeführt werden kann.
+Im ersten Moment besteht vorerst gar kein Unterschied zwischen einem Prozess und einem Thread, 
+Denn letztendlich besteht ein Prozess mindestens aus einem Thread. Ferner endet ein Prozess, wenn sich alle 
+Threads beenden. Somit ist der eine Prozess (dieser eine Prozess ist der erste Thread, auch Main Thread) verantwortlich 
+für die gleichzeitige Ausführung mehrerer Threads. Threads können nur innerhalb eines Prozesses ausgeführt werden.
+Der entscheidene Unterschied zwischen einem Prozess und einem Thread ist, das Prozesse jeweils einen eigenen Adressraum im Speicher haben.
+Threads nutzen jeweils den Adressraum des Prozesse zu dem sie gehören. Streams sind dein abstraktes Konzept!
+
+Der gravierende Unterschied zwischen den Threads und den Prozessen besteht darin, dass Threads unabhängige 
+Befehlsfolgen innerhalb eines Prozesses sind. Man könnte auch sagen, Threads sind in einem Prozess gefangen oder
+verknüpft bzw eingeschlossen.
+
+Ein Task(eigentlich der Prozess) ist eine Verschachtelung der Ausführung durch mehrere Prozesse. 
+
+
+quelle Vorlesungsfolien / http://openbook.rheinwerk-verlag.de/c_von_a_bis_z/026_c_paralleles_rechnen_003.htm
+
+
+3.
+(a)Der Stdio.h-Header definiert drei Variablentypen, mehrere Makros und verschiedene Funktionen für die Eingabe und Ausgabe.
+
+(b)Streams und Dateideskriptoren(File Discriptor)
+
+Wenn man eine Datei eingeben oder ausgeben möchte, hat man die Wahl zwischen zwei grundlegenden Mechanismen
+für die Darstellung der Verbindung zwischen dem Programm und der Datei und zwar die Dateideskriptoren und Streams. 
+Dateideskriptoren werden als Objekte vom Typ int dargestellt, während Streams als FILE * Objekte dargestellt werden.
+Dateideskriptoren bieten eine primitive Schnittstelle für Ein- und Ausgabeoperationen. Beide "Mechanismen" können eine 
+Verbindung zu einem Gerät (z. B. einem Terminal) für die Kommunikation mit einem anderen Prozess als auch eine normale Datei darstellen.
+Falls man Kontrolltätigkeiten durchführen möchte, die für ein Gerät spezifisch sind,
+muss man einen Dateideskriptor verwenden. Es gibt keine Möglichkeit, Ströme auf diese Weise zu benutzen.
+
+Streams bieten eine übergeordnete Schnittstelle, die auf die primitiven Dateideskriptor-Einrichtungen geschichtet ist. 
+Der Hauptvorteil der Verwendung der Stream-Schnittstelle besteht darin, dass der Satz von Funktionen
+zur Durchführung von tatsächlichen Ein- und Ausgabeoperationen (im Gegensatz zu Steueroperationen) auf Streams
+viel reicher und leistungsstärker ist, als die entsprechenden Einrichtungen für Dateideskriptoren. 
+Die Dateideskriptor-Schnittstelle bietet nur einfache Funktionen für die Übertragung von Zeichenblöcken,
+aber die Stream-Schnittstelle bietet auch leistungsfähige formatierte Ein- und Ausgabefunktionen (printf und scanf)
+sowie Funktionen für zeichen- und zeilenorientierte Ein- und Ausgabe.
+
+(c)
+Für jedes ausführbare Programm werden die folgenden Standard-Streams bereitgestellt:
+
+    stdin – Standardeingabe
+
+    stdout – Standardausgabe
+
+    stderr – Standardfehlerausgabe
+
+In der Regel ist der Stream stdin für die Eingabe über die Tastatur eingestellt. Für die Ausgabe auf dem Bildschirm 
+sind die Streams stdout und stderr eingerichtet. Der Unterschied zwischen stdout und stderr besteht darin, 
+dass stderr nicht gepuffert wird – im Gegensatz zu stdout. Daher liest jedes scanf() und fscanf().
+
+
+Quelle http://openbook.rheinwerk-verlag.de/c_von_a_bis_z/016_c_ein_ausgabe_funktionen_010.htm / Shell an sich / https://www.gnu.org/software/libc/manual/html_node/Streams-and-File-Descriptors.html

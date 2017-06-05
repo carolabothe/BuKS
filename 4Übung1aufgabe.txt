@@ -1,11 +1,12 @@
-Übung 4  [TI-3] BuKs
+﻿Übung 4  [TI-3] BuKs
 Etienne Jentzsch / Carola Bothe
 
 Aufgabe1)
 1.
 a) Trashing :
 Thrashing oder auch Seitenflattern genannt geschieht, wenn ein Prozess nicht genug Seiten hat und 
-dadurch die Seiten-. Fehlerrate zu hoch wird und damit nur noch mit Ein- und Auslagern von Seiten beschäftigt ist.
+dadurch die Seiten-Fehlerrate zu hoch wird und damit nur noch mit Ein- und Auslagern von Seiten beschäftigt ist.
+Tritt meistens auf wenn man zu viel Speicher verteilt als man hat.
 
 b) TLB :
 Der TLB (Translation Lookaside Buffer/Übersetzungspuffer) cachiert die zuletzt verwendeten Seitentabelleneinträge 
@@ -13,18 +14,40 @@ und ist eine funktionale Einheit der Speicherverwaltung.
 
 c) MMU :
 Die MMU (Memory Management Unit/Speicherverwaltungseinheit) übernimmt die Speicherverwaltung von Arbeistspeichern,also
-eine Hardwarekomponente eines Computers und rechnet virtuelle Adressen in physische Adressen um.
+eine Hardwarekomponente eines Computers und rechnet virtuelle Adressen in physikalische Adressen um.
 
 d) physikalische Adresse :
-Jede physikalische Adresse existiert im Netz nur einmal und kann auch vom Systemadministrator nicht verändert werden
+Der physische Adressraum ist die Menge aller durch einen Prozessor ansprechbaren Speicheradressen. Die Größe dieses
+Adressraumes wird durch die Zahl der Adressleitungen des Prozessors oder der Speicherverwaltung (MMU) begrenzt und jede
+physikalische Adresse existiert im Netz nur einmal und kann auch vom Systemadministrator nicht verändert werden.
 
 e) logische (auch virtuelle) Adresse :
-Die logische Adresse hingegen definiert der Administrator selbst.
+Mit Hilfe von Segmentierung teilen Betriebssystem und MMU den linearen oder direkt den physischen Adressraum in Segmente
+und bilden somit den logischen Adressraum, wobei logische Adressen aus zwei Teilen bestehen, einer Segmentadresse und 
+einem Offset. Sind die Adressen die das Programm sieht. Immer wenn ein Programm also eine Adresse sozusagen anforedert
+
 f) Adressraum :
-Als Adressraum wird eine Menge von Adressen bezeichnet, die sich jede einheitlich und eindeutig adressieren lässt.
+Als Adressraum wird eine Menge von Adressen genannt, die sich einheitlich und eindeutig adressieren lässt.
 
 2. Erläutern Sie die Problematik von interner und externer Fragmentierung an Hand des Beispiels aus der
 Vorlesung. Wie löst Paging diese?
+Fragmentierung bezeichnet die Zerstückelung eines Speicherraums (auch externe Fragmentierung genannt)
+Als interne Fragmentierung oder Verschnitt bezeichnet man den Effekt, dass bei einer Verteilung von Daten auf
+Speicherblöcke diese nur zum Teil füllen kann. Ein weiterer Effekt,der zu ineffizienter Speicherverwendung führt,
+ist die externe Fragmentierung an sich.
+Paging = Speicherblöcke gleicher Größe
+Segmenting = Speicherblöcke verschiedener Größen
+Heutzutage gibt es 3-stufiges Paging
+Klausur: 3-Stufiges Paging und den eigenen ZUgriff auf die Daten also 4
+Table Base adress wird festgelegt wo der virtuelle im physikalischen adresraum liegt.
+
+
+Speicherzugriffe sind sehr langsam -> deswegen Hardware unumgänglich -> mehr Geschwindigkeit
+Die PAge-TAbles werden vom Betriebssystem geschrieben oder festgelegt.
 
 3. Ein Programm, das direkt nach dem Starten die Adresse der Main-Funktion ausgibt und dann in eine
 Endlosschleife verfällt, wird dreimal parallel gestartet. Was wird ausgegeben und warum?
+Alles was das Programm sieht ist nur die virtuellen Adresse, die beim Compiler Vorgang festgelegt werden.
+
+
+quellen: https://de.wikipedia.org/wiki/Fragmentierung_(Informationstechnik) / vorlesungsfolien / https://de.wikipedia.org/wiki/Paging

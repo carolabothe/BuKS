@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <sys/stat.h>	//für zuletzt modifiziert
+#include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <string.h>
 #include <inttypes.h>
+#include <time.h>
 
 int filter (const struct dirent* entry){
 	if(entry->d_name[0] == '.'){return 0;}
@@ -57,14 +60,21 @@ if(n<0){
 	fprintf(stderr,"Fehler beim Lesen des Ordners.\n");
 	return 1;
 }
-
+if(n==0){printf("Der angegebene Ordner ist leer.\n");}
+//struct stat sb; //hier soll datei daten reingespeichert werden
+//struct stat *buf = &sb;//zeigt auf gewollten speicherort
 for(int64_t i = 0;i<n;i++){
-	if(sizeof(namelist) == 0){printf("Der angegebene Ordner ist leer.");}
-	if(optl == 1){printf("%s\tLetzte Mod:%s\n",namelist[i]->d_name,path);}	//woher kriegen wir lastmod???
-	else{printf("%s\n", namelist[i]->d_name);}
+	/*if(optl == 1){
+		stat(strcat(path,namelist[i]->d_name),buf);//funktion kriegt pointer der auf gewollten Speicherort zeigt
+		time_t t = sb.st_mtime;	//rufen letzte modifikation ab
+		printf("%s\tLetzte Mod:%s\n",namelist[i]->d_name,asctime(localtime(&t)));//umwandeln in Kalenderzeit
+	} //gibt einem leider immer das gleiche falsche und zerstört irgendwie auch die -a option obwohl ee mit der nichts zu tun hat :(
+*/
+	
+	printf("%s\n", namelist[i]->d_name);
 	free(namelist[i]);
 }
-
+//free(buf);
 
 return 0;
 }

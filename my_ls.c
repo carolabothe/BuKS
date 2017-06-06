@@ -1,59 +1,70 @@
-#define POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
-#include <inttypes.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <stdlib.h>
+#include <string.h>
+#include <inttypes.h>
+
+int filter (const struct dirent* entry){
+	if(entry->d_name[0] == '.'){return 0;}
+	else{return 1;}
+}
 
 int main(int argc, char* argv[]){
-//auswählen der Option
 
-
-
-//Auflisten des aktuellen Ordnerinhalts, keine explizite Sortierung gefordert
-//hilfreiche Seite: http://pubs.opengroup.org/onlinepubs/007908775/xsh/readdir.html
-/* aus scandir manual, für -l:
 struct dirent **namelist;
-int n;
-n = scandir(".",&namelist, NULL, alphasort);
+
+int64_t optl = 0;	//sortiert und mehr infos
+int64_t opta = 0;	//versteckte Dateien
+char path[100]=".";	//default ist CWD
+int64_t n;
+if(argc==1){
+	n = scandir(".",&namelist, filter, NULL);	//öffnen momentanes Verzeichnis
+}
+if(argc>1){
+	if(argc==3){
+		strcpy(path,argv[2]); //gehen davon aus das erst optionen angegeben werden
+	}
+	
+	if(argv[1][0]=='-'){
+		switch(argv[1][1]){
+			case 'a': opta = 1;break;
+			case 'l': optl = 1;break;
+			default: fprintf(stderr, "Keine gültige Option.\n");return 2;
+		}
+		switch(argv[1][2]){
+			case '\0': break;
+			case 'a': opta = 1;break;
+			case 'l': optl = 1;break;
+			default: fprintf(stderr, "Keine gültige Option.\n"); return 2;
+		}
+		if(opta == 1){	//versteckte datein auflisten
+			if(optl == 1){//und sortieren
+				n = scandir(path,&namelist, NULL, alphasort);}
+			else{n = scandir(path,&namelist, NULL, NULL);}
+		}
+		else if(optl==1){ n = scandir(path,&namelist, filter, alphasort);}//nur sortieren
+	}
+	
+	else{
+		strcpy(path,argv[1]); //Ordner angegeben
+		n = scandir(path,&namelist, filter, NULL); //nur ausgeben (ohne Option)
+	}
+}
 if(n<0){
-	fprintf(stderr,"Fehler beim Lesen des Ornders");
+	fprintf(stderr,"Fehler beim Lesen des Ordners.\n");
 	return 1;
 }
 
 for(int64_t i = 0;i<n;i++){
-	printf("%s\n", namelist[i]->d_name);
+	if(optl == 1){printf("%s\tLetzte Mod:%s\n",namelist[i]->d_name,path);}	//woher kriegen wir lastmod???
+	else{printf("%s\n", namelist[i]->d_name);}
 	free(namelist[i]);
-}*/
-
-DIR* dirp;
-if((argc==2)&(argv[2][1]!='-')){
-dirp = opendir(argv[2]);
 }
-else if(argc==3){
-dirp = opendir(argv[3]);//gehen davon aus das erst optionen angegeben werden
-}
-else{
-dirp = opendir(".");	//öffnen momentanes Verzeichnis
-}
-if(dirp == NULL){printf("Fehler beim Öffnen.");}
-struct dirent* entry = readdir(dirp);
-while((entry = readdir(dirp))){ 
-	printf("%s\n",entry->d_name);
-}
-closedir(dirp);
-//printf("\n");
-
-
-
-
-
-// my_ls -l Auflisten des aktuellen Ordnerinhalts, keine explizite Sortierung gefordert –>alphasort?
-// my_ls -a Versteckte Dateien und Ordner mit auflisten 
-// my_ls beliebiger/ordner bzw. my_ls beliebige/datei = Auslesen des angegebenen Ordners bzw. der angegebenen Datei
-
 
 
 return 0;
 }
+

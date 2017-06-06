@@ -59,6 +59,7 @@ if(n<0){
 }
 
 for(int64_t i = 0;i<n;i++){
+	if(sizeof(namelist) == 0){printf("Der angegebene Ordner ist leer.");}
 	if(optl == 1){printf("%s\tLetzte Mod:%s\n",namelist[i]->d_name,path);}	//woher kriegen wir lastmod???
 	else{printf("%s\n", namelist[i]->d_name);}
 	free(namelist[i]);

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
 
 struct dirent **namelist;
 
-int64_t optl = 0;	//sortiert und mehr infos
+int64_t optl = 0;	//sortiert und letzte modifikation
 int64_t opta = 0;	//versteckte Dateien
 char path[100]=".";	//default ist CWD
 int64_t n;
@@ -61,20 +61,20 @@ if(n<0){
 	return 1;
 }
 if(n==0){printf("Der angegebene Ordner ist leer.\n");}
-//struct stat sb; //hier soll datei daten reingespeichert werden
-//struct stat *buf = &sb;//zeigt auf gewollten speicherort
+
+struct stat *buf;
+buf = malloc(sizeof(struct stat));
 for(int64_t i = 0;i<n;i++){
-	/*if(optl == 1){
-		stat(strcat(path,namelist[i]->d_name),buf);//funktion kriegt pointer der auf gewollten Speicherort zeigt
-		time_t t = sb.st_mtime;	//rufen letzte modifikation ab
-		printf("%s\tLetzte Mod:%s\n",namelist[i]->d_name,asctime(localtime(&t)));//umwandeln in Kalenderzeit
-	} //gibt einem leider immer das gleiche falsche und zerstört irgendwie auch die -a option obwohl ee mit der nichts zu tun hat :(
-*/
-	
-	printf("%s\n", namelist[i]->d_name);
+	if(optl == 1){
+		stat(namelist[i]->d_name,buf);
+		time_t t = buf->st_mtime;	//rufen letzte modifikation ab
+		printf("%s\t%s\n",namelist[i]->d_name,asctime(localtime(&t)));//umwandeln in Kalenderzeit
+	}	
+	else{printf("%s\n", namelist[i]->d_name);}
 	free(namelist[i]);
+
 }
-//free(buf);
+free(buf);
 
 return 0;
 }

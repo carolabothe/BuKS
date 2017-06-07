@@ -19,7 +19,7 @@ Festplatten, besonders günstigere, sind sehr anfällig und gehen schnell kaputt
 RAID ist eine Methode bei der man eine Festplatte mehr nutzt (häufig 5 statt 4), als man braucht und die 
 Informationen so redundant speichert, dass falls eine Festplatte ausfällt, deren Inhalt 
 durch die anderen wiederhergestellt werden kann. Das Betriebssystem sieht die vielen 
-Festplatten als eine logische Einheit. (Unterschied level 4 und 5?)
+Festplatten als eine logische Einheit.
 (Quelle: VL Folien 6.31,32 und Mitschrift) 
 
 4. Tree-Structured Directory
@@ -58,8 +58,8 @@ b) Informieren Sie sich über die Dateisysteme NTFS und ext4. Arbeiten Sie die w
 heraus und nennen Sie Vor- bzw. Nachteile. Welches Dateisystem bevorzugen Sie?
 Benutzen Sie hier ausschließlich Primärliteratur.
 
-Das Dateisystem NTFS bietet Leistung, Zuverlässigkeit,erhöhte Sicherheit und erweiterte Funktionen, die in FAT nicht
-zu finden sind. Zum Beispiel enthält NTFS integrierte Sicherheitsfunktionen wie Datei- und Ordnerberechtigungen und 
+Das Dateisystem NTFS bietet Leistung, Zuverlässigkeit,erhöhte Sicherheit und erweiterte Funktionen.
+Zum Beispiel enthält NTFS integrierte Sicherheitsfunktionen wie Datei- und Ordnerberechtigungen und 
 das Encrypting File System(EFS). Dieses wird verwendet für das Speichern von verschlüsselten Dateien auf NTFS-Volumes.
 NTFS bietet auch Unterstützung für Volumes bis zu 256 Terabyte Größe, sowie für Datenträger Quoten und
 Komprimierung als auch für montierte Laufwerke an.
@@ -67,8 +67,8 @@ Mit NTFS kann man Berechtigungen für eine Datei oder einen Ordner festlegen und
 deren Zugriff man einschränken oder zulassen möchte. Jeder Eindringling, der versucht, auf die verschlüsselten
 Dateien zuzugreifen, wird daran gehindert, auch wenn dieser Eindringling physischen Zugriff auf den Computer hat.
 -> erhöhte Sicherheit
-NTFS ist auf Windows XP Vista 2008 2003 2000 NT & Windows 7, Windows 8, Windows 10 proprietär und es unterstützt
-auch große Bände und leistungsstarke Speicherlösungen wie RAIDS.
+NTFS ist eher für die Windows Reihe proprietär und es unterstützt auch große Bände und leistungsstarke
+Speicherlösungen wie RAIDS.
 
 Was ist mit Zuverlässigkeit der Leistung gemeint?
 Wenn der Computer im Falle eines Systemfehlers neu startet, verwendet NTFS seine Protokolldatei und 
@@ -80,6 +80,51 @@ Zum Beispiel, durch die Formatierung eines POP3 Mail-Servers mit NTFS,
 kann der Mail-Store Protokollierung und Wiederherstellung anbieten. Im Falle eines Server-Crashs kann NTFS Daten
 wiederherstellen, indem es seine Protokolldateien wiedergibt. -> Steigerung der Zuverlässigkeit
 
-EXT4:
 
-Quellen: https://msdn.microsoft.com/de-de/library/cc758691.aspx
+
+Das EXT4 (fourth extended filesystem) ist für Linux bestimmt.
+EXT4 erlaub Zeichen im Dateinamen, die nicht in NTFS erlaubt sind (/,\,:,*,",?,<,>,|).
+Dies hat aber nichts mit der Leistung von EXT4 zu tun. EXT4 gilt als sehr stabil und bietet ein größers
+Dateisystem und eine größere Dateigröße an. Damit hat es 1 EiB als maximalen Dateisystemgröße und 16 TiB der
+maximalen Dateigröße(siehe Notiz unten). EXT4 verdoppelt die Unterverzeichnisse zu seinem Vorgänger auf ganze 64000.
+Das EXT4 besitz sogenannte Extents,welche die Geschwindigkeit bei der Verwaltung größerer Dateien erhöht.
+Extends(Ausmaße) sind eine Art Haufen von zusammenhängenden, physischen Blöcken. Riesige Dateien sind in mehrere
+Ausmaße aufgeteilt. Die Ausdehnung verbessert die Leistung und hilft die Fragmentierung zu reduzieren, da ein Ausmaß
+kontinuierliche Layouts auf der Festplatte fördert. Wenn neue Daten auf die Festplatte geschrieben werden verwendet
+EXT4 einen "Multiblock-Zuweiser" (mballoc), der viele Blöcke in einem einzigen Anruf verteilt, anstelle eines einzelnen
+Blocks pro Anruf. Dies verbessert nochmals die Leistung und ist besonders nützlich bei verzögerter Zuteilung und Extents. 
+Dieses Vorgehen wirkt sich dabei nicht auf das Festplattenformat aus. 
+
+Verbesserung der Inode bei EXT4. Die Inode-Reservierung besteht darin, mehrere Inodes zu reservieren, wenn ein Verzeichnis
+erstellt wird und erwartet, dass sie in der Zukunft verwendet werden. Dies verbessert die Leistung, denn wenn 
+neue Dateien in diesem Verzeichnis erstellt werden, können sie die reservierten Inodes verwenden. 
+Die Erstellung und Löschung von Dateien ist daher effizienter. EXT4 weist auch einen verbesserten Zeitstempel 
+auf Nanosekunden-Basis auf.
+
+Was bringt die Persistance preallocation bei EXT4?
+Anwendungen sagen dem Dateisystem, den Speicherplatz zuzuordnen und das Dateisystem stellt dann die notwendigen Blöcke
+und Datenstrukturen vor. Aber noch gibt es keine Daten darüber, bis die Anwendung wirklich die Daten reinschreibt. 
+Das macht die P2P-Anwendungen, denn diese ordnet den notwendigen Platz für einen Download vor, 
+der Stunden dauern würde. Dies hat mehrere Verwendungen:
+Erstens, um Anwendungen zu vermeiden, macht es sich selbst ineffizient durch das Ausfüllen einer Datei mit Nullen. 
+Zweitens, um die Fragmentierung zu verbessern, da die Blöcke zu einer Zeit, so angrenzend wie möglich zugewiesen werden. 
+Drittens, um sicherzustellen, dass Anwendungen immer den Platz haben, den sie kennen und benötigen.
+
+Ext4 prüft die "Journaldaten", um zu wissen, ob die "Journalblöcke" fehlschlagen oder beschädigt sind. Das nennt man 
+Journal-checksumming und hat einen Vorteil: Es erlaubt, das zweiphasige Commit-System von Ext3's Journaling 
+auf eine einzige Phase umzuwandeln und die Dateisystemoperation in einigen Fällen zu beschleunigen. 
+So werden gleichzeitig Zuverlässigkeit und Leistung verbessert.
+
+Die wesentlichen Vor-und Nachteile der beiden Filesystems:
+NTFS                   
+
+
+Notiz am Rande:
+1EiB=1024PiB
+
+1PiB=1024TiB
+
+1TiB=1024GiB 
+
+Quellen: https://msdn.microsoft.com/de-de/library/cc758691.aspx / https://ext4.wiki.kernel.org/index.php/Ext4_Howto#Sub_directory_scalability /
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/filesystems/ext4.txt?id=HEAD

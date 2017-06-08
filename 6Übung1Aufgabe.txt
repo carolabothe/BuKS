@@ -58,7 +58,7 @@ b) Informieren Sie sich über die Dateisysteme NTFS und ext4. Arbeiten Sie die w
 heraus und nennen Sie Vor- bzw. Nachteile. Welches Dateisystem bevorzugen Sie?
 Benutzen Sie hier ausschließlich Primärliteratur.
 
-Das Dateisystem NTFS bietet Leistung, Zuverlässigkeit,erhöhte Sicherheit und erweiterte Funktionen.
+Das Dateisystem NTFS(New Technology File-System) bietet Leistung, Zuverlässigkeit,erhöhte Sicherheit und erweiterte Funktionen.
 Zum Beispiel enthält NTFS integrierte Sicherheitsfunktionen wie Datei- und Ordnerberechtigungen und 
 das Encrypting File System(EFS). Dieses wird verwendet für das Speichern von verschlüsselten Dateien auf NTFS-Volumes.
 NTFS bietet auch Unterstützung für Volumes bis zu 256 Terabyte Größe, sowie für Datenträger Quoten und
@@ -86,8 +86,9 @@ Das EXT4 (fourth extended filesystem) ist für Linux bestimmt.
 EXT4 erlaub Zeichen im Dateinamen, die nicht in NTFS erlaubt sind (/,\,:,*,",?,<,>,|).
 Dies hat aber nichts mit der Leistung von EXT4 zu tun. EXT4 gilt als sehr stabil und bietet ein größers
 Dateisystem und eine größere Dateigröße an. Damit hat es 1 EiB als maximalen Dateisystemgröße und 16 TiB der
-maximalen Dateigröße(siehe Notiz unten). EXT4 verdoppelt die Unterverzeichnisse zu seinem Vorgänger auf ganze 64000.
-Das EXT4 besitz sogenannte Extents,welche die Geschwindigkeit bei der Verwaltung größerer Dateien erhöht.
+maximalen Dateigröße in Linux, wobei die Dateigröße auch dem gesamten Dateisystem entsprechen kann(siehe Notiz unten).
+EXT4 verdoppelt die Unterverzeichnisse zu seinem Vorgänger EXT3 auf ganze 64000.
+Das EXT4 besitzt sogenannte Extents, welche die Geschwindigkeit bei der Verwaltung größerer Dateien erhöht.
 Extends(Ausmaße) sind eine Art Haufen von zusammenhängenden, physischen Blöcken. Riesige Dateien sind in mehrere
 Ausmaße aufgeteilt. Die Ausdehnung verbessert die Leistung und hilft die Fragmentierung zu reduzieren, da ein Ausmaß
 kontinuierliche Layouts auf der Festplatte fördert. Wenn neue Daten auf die Festplatte geschrieben werden verwendet
@@ -116,7 +117,29 @@ auf eine einzige Phase umzuwandeln und die Dateisystemoperation in einigen Fäll
 So werden gleichzeitig Zuverlässigkeit und Leistung verbessert.
 
 Die wesentlichen Vor-und Nachteile der beiden Filesystems:
-NTFS                   
+Ein Vorteil ist erstmal, dass beide also NTFS und Ext4 ein Journal über alle Schreibvorgänge besitzen,
+damit ermöglichen beide Dateisysteme den letzten konsistenten Zustand zu rekonstruieren. Nachteil der beiden ist,
+dass EXT4 nur für Linux bestimmt ist und nicht wirklich Kompatibel für andere Betriebssysteme ist. Genauso wie NTFS 
+nur für Windows geschaffen ist, zwar auch auf Linux läuft, aber beide Dateisysteme generell ihre Leistung nur in den
+jeweiligen Betriebssystemen voll entfalten können. 
+Das Maximum der Dateigröße bei EXT4 liegt bei 16TiB und hat 1EiB als maximale Dateisystemgröße
+Die Dateigröße kann beim EXT4 so groß wie das Dateissystems selbst sein wohingegen beim NTFS die größe begrenzt ist.
+-> folglich ist NTFS generell gesehen größer als EXT4 und bietet damit mehr Speicherplatz, aber mit EXT4
+kann man größere Dateien anlegen las bei NTFS. Man muss aber beachten, dass die Betriebssysteme die größen
+einschränken können.
+Das Maximum der Dateilänge von NTFS liegt bei 255 Zeichen, aber bei EXT4 bei 255 Bytes -> also beinahe "identisch"
+NTFS erlaubt online-Komprimierung und online-Verschlüsselung und EXT4 nicht, können aber beide ihre Daten an sich verschlüsseln.
+Bei einem Absturz des Computers bietet NTFS mehr Sicherheit als EXT4 aufgrund von Zeitverzögerungen bei den Datenblöcken
+und den Inodes(siehe oben). Ein weiterer Vorteil gegenüber NTFS hat EXT4 bei der Länge der Pfadnamen, 
+die ebenfalls in NTFS begrenzt sind aber in EXT4 nicht. NTFS ist auch ein wenig empfindlicher was Groß- und
+Kleinschreibung betrifft bei Windows. Z.B. kann man keine 2 Ordner oder Dateien anlegen die bspw.
+programm und PROGRAMM heißen, da man dann eine Datei durch die andere ersetzen muss.
+
+Wir bevorzugen EXT4, da es von der Geschwindikeit uns mehr überzeugt durch seine Features und vorallem 
+es ermöglicht beliebig große Dateien schnell von A nach B zu verlegen, solange diese halt nicht die Dateisystemgröße
+übergehen. Durch mballoc ist auch die Fragmentierung damit besser. NTFS würde uns eher durch mehr
+Sicherheit der Dateien locken.
+         
 
 
 Notiz am Rande:

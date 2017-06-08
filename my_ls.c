@@ -73,7 +73,7 @@ for(int64_t i = 0;i<n;i++){
 	else{printf("%s\n", namelist[i]->d_name);}
 	free(namelist[i]);
 
-}
+} 
 free(buf);
 
 return 0;

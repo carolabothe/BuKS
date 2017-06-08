@@ -68,7 +68,7 @@ for(int64_t i = 0;i<n;i++){
 	if(optl == 1){
 		stat(namelist[i]->d_name,buf);
 		time_t t = buf->st_mtime;	//rufen letzte modifikation ab
-		printf("%s\t%s\n",namelist[i]->d_name,asctime(localtime(&t)));//umwandeln in Kalenderzeit
+		printf("%s\t%s",namelist[i]->d_name,asctime(localtime(&t)));//umwandeln in Kalenderzeit
 	}	
 	else{printf("%s\n", namelist[i]->d_name);}
 	free(namelist[i]);

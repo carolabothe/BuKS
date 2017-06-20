@@ -11,17 +11,32 @@ int main(int argc , char *argv[]){
     struct sockaddr_in server , client;
     char client_message[2017];
      
-    //Socket erstellen
-    socket_descriptor = socket(AF_INET , SOCK_STREAM , 0);
+    //Socket erstellen je nach option
+    if(argv[1][0]=='-'){
+		switch(argv[1][1]){
+			case 'U': 
+				socket_descriptor = socket(AF_UNIX , SOCK_STREAM , 0);
+				server.sin_family = AF_UNIX; //in quelle steht dass das immer AF:_INET sein soll?
+			case 'u': 
+				socket_descriptor = socket(AF_INET , SOCK_DGRAM , 0);
+				server.sin_family = AF_INET;
+
+			case 't': 
+				socket_descriptor = socket(AF_INET , SOCK_STREAM , 0);
+				server.sin_family = AF_INET;
+
+			default: 
+				fprintf(stderr, "Keine gültige Option.\n");
+				return 2;
+		}
     if (socket_descriptor == -1){
         printf("Konnte kein socket erstellt werden");
     }
     puts("Socket erstellt");
      
     //wichtig für die socket Adresse in struc
-    server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons( 8888 );
+    server.sin_port = htons( 8888 ); //8888 is port number
      
     //Adresse an den Server binden
     if( bind(socket_descriptor,(struct sockaddr *)&server , sizeof(server)) < 0){
@@ -47,6 +62,7 @@ int main(int argc , char *argv[]){
     puts("Eingabe hat geklappt");
      
     //vom Client die nachricht bekommen:
+    // statt read ans write sendto and receivefrom ?
     while( (read_size = recv(client_sock , client_message , 2017 , 0)) > 0 ){
         //Client die Message zurückschicken (nur ein test für nächste woche)
         write(client_sock , client_message , strlen(client_message));

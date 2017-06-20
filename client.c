@@ -12,14 +12,30 @@ int main(int argc , char *argv[]){
     struct sockaddr_in server;
     char message[2017] , server_reply[2828]; //man kann eine Zahl zwischen 2000 und 6500 wählen ca.
      
-    sock = socket(AF_INET , SOCK_STREAM , 0);//Socket erstellen
+        //Socket erstellen je nach option
+    if(argv[1][0]=='-'){
+		switch(argv[1][1]){
+			case 'U': 
+				sock = socket(AF_UNIX , SOCK_STREAM , 0);
+				server.sin_family = AF_UNIX;
+			case 'u': 
+				sock = socket(AF_INET , SOCK_DGRAM , 0);
+				server.sin_family = AF_INET;
+
+			case 't': 
+				sock = socket(AF_INET , SOCK_STREAM , 0);
+				server.sin_family = AF_INET;
+
+			default: 
+				fprintf(stderr, "Keine gültige Option.\n");
+				return 2;
+		}
     if (sock == -1){
         printf("Konnte Socket nicht erstellen");
     }
     puts("Socket wurde erstellt");
      
     server.sin_addr.s_addr = inet_addr("127.0.0.1"); //Standardadresse
-    server.sin_family = AF_INET; //muss das immer af_inet sein ??
     server.sin_port = htons( 8888 ); // man kann beliebigen Port wählen
 	
     if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0){

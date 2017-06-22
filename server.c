@@ -6,6 +6,9 @@
 #include<sys/mman.h>
 #include<fcntl.h>    
  
+//aufruf: $ ./server -u 8080	//oder -t
+// ./server -U kingkong
+
 int main(int argc , char *argv[]){
     int socket_descriptor , client_sock , c , read_size;
     struct sockaddr_in server , client;
@@ -63,7 +66,7 @@ int main(int argc , char *argv[]){
      
     //vom Client die nachricht bekommen:
     // statt read ans write sendto and receivefrom ?
-    while( (read_size = recv(client_sock , client_message , 2017 , 0)) > 0 ){
+    while( (read_size = recv(client_sock , client_message , 2017 , 0)) > 0 ){		//müssen unterscheiden ob wir link zur datei bekommen oder firekt text von stdin
         //Client die Message zurückschicken (nur ein test für nächste woche)
         write(client_sock , client_message , strlen(client_message));
     }

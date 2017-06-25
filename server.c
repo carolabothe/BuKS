@@ -1,5 +1,6 @@
 #include<stdio.h> 
-#include<string.h>    
+#include<string.h>  
+#include<stdlib.h>         
 #include<sys/socket.h>    
 #include<arpa/inet.h> 
 #include<netinet/in.h>
@@ -8,6 +9,7 @@
 #include<fcntl.h>
 #include <dirent.h>
 #include<sys/un.h>  
+#include<unistd.h>
  
 int main(int argc , char *argv[]){
     int sock, socket_descriptor , client_sock , c , read_size;
@@ -43,7 +45,7 @@ int main(int argc , char *argv[]){
 				return 2;
 		}
 		if (sock == -1 || sock >0){
-			printf(stderr, "Konnte Socket nicht erstellen");
+			fprintf(stderr, "Konnte Socket nicht erstellen");
 			exit(1);
     }
     printf("Socket wurde erstellt");

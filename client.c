@@ -1,5 +1,6 @@
 #include<stdio.h> 
-#include<string.h>    
+#include<string.h>
+#include<stdlib.h>       
 #include<sys/socket.h>    
 #include<arpa/inet.h> 
 #include<netinet/in.h>
@@ -52,7 +53,7 @@ int main(int argc , char *argv[]){
      
     server.sin_addr.s_addr = inet_addr(argv[2]); //nimmt das argv[2]
     server.sin_port = htons( 5555 ); // man kann beliebigen Port wählen
-	if(socktype == 0 | (socktype == 2)){ //UNIX 
+	if((socktype == 0) | (socktype == 2)){ //UNIX 
     	if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0){	
     		fprintf(stderr, "Connect hat nicht funktioniert.\n");
     	    return 1;
@@ -72,7 +73,7 @@ int main(int argc , char *argv[]){
         	puts(server_reply);	
 
     
-    close(sock); //schließt den socket
+    shutdown(sock,2); //schließt den socket
     return 0;
 	}
 }

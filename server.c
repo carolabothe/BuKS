@@ -11,6 +11,8 @@
 #include<sys/un.h>  
 #include<unistd.h>
  
+ //aufruf: $ ./server -u 8080	//oder -t
+// ./server -U kingkong
 int main(int argc , char *argv[]){
     int sock, socket_descriptor , client_sock , c , read_size;
 	int64_t socktype;
@@ -18,25 +20,22 @@ int main(int argc , char *argv[]){
 	char client_message[2017];
 	
 	if(argc!=3){
-    	fprintf(stderr,"Falsche Anzahl an Argumenten.");
+    	fprintf(stderr,"Falsche Anzahl an Argumenten.\n");
     	return 1;
     }
     //Socket erstellen je nach option wie beim client
     if(argv[1][0]=='-'){
 		switch(argv[1][1]){
 			case 'U': 
-				sock = socket(AF_UNIX , SOCK_STREAM , 0);
-				server.sin_family = AF_UNIX;
+				sock = socket(PF_INET , SOCK_STREAM , 0);
 				socktype = 0;
 				break;
 			case 'u': 
-				sock = socket(AF_INET , SOCK_DGRAM , 0);
-				server.sin_family = AF_INET;
+				sock = socket(PF_INET , SOCK_DGRAM , 0);
 				socktype = 1;
 				break;
 			case 't': 
-				sock = socket(AF_INET , SOCK_STREAM , 0);
-				server.sin_family = AF_INET;
+				sock = socket(PF_INET , SOCK_STREAM , 0);
 				socktype = 2;
 				break;
 

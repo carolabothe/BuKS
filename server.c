@@ -70,7 +70,7 @@ int main(int argc , char *argv[]){
     if((socktype==0)|(socktype==2)){ //tcp Fall
     	//Falls noch keine Eingabe da ist
     	puts("Warte auf Eingabe vom Client...");
-    	c = sizeof(struct sockaddr_in);
+    	socklen_t c = sizeof(struct sockaddr_in);
      
     	//accept die Eingabe vom client
     	client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c);
@@ -96,11 +96,32 @@ int main(int argc , char *argv[]){
     	    fprintf(stderr, "übergabe der Nachricht ist fehlgeschlagen\n");
     	}
     }
-    else{
-    //todo: udp
-    }
-    }
+    else if(socktype==1){ //udp
+    	puts("Warte auf Eingabe vom Client...");
+    	socklen_t c = sizeof(struct sockaddr_in);
+		
+		char addr_str[INET_ADDRSTRLEN] = "";
+		ssize_t read_size = 0;
+		while((read_size = recvfrom(sock, client_message,1000,0,(struct sockaddr*)&client,&c))>0){						 
+			FILE * file;
+			file = fopen(client_message , "r+"); //Öffnen Dateipfad, den uns client schickt
+			char* idc = malloc(1000);		
+			char* content = fgets(idc,1024,file); //1024 ist einfach mal das limit der stringlänge	
+			sendto(sock, content, read_size, 0,(struct sockaddr*)&client,client_sock);
+			free(idc);
+		}
+	    if(read_size == 0){
+    	    puts("Client rausgeflogen"); //der Client disconnected
+    	    fflush(stdout);
+    	}
+    	else if(read_size == -1){
+    	    fprintf(stderr, "übergabe der Nachricht ist fehlgeschlagen\n");
+    	}
+	}
+	}	
+    
     shutdown(sock,2); //schließt den socket
+    shutdown(client_sock,2); //schließt den socket
     return 0;
 
 }

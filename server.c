@@ -1,45 +1,57 @@
-#include<stdio.h>
+#include<stdio.h> 
 #include<string.h>    
-#include<sys/socket.h>
+#include<sys/socket.h>    
 #include<arpa/inet.h> 
-#include<unistd.h>
+#include<netinet/in.h>
+#include<netdb.h>
 #include<sys/mman.h>
-#include<fcntl.h>    
+#include<fcntl.h>
+#include <dirent.h>
+#include<sys/un.h>  
  
-//aufruf: $ ./server -u 8080	//oder -t
-// ./server -U kingkong
-
 int main(int argc , char *argv[]){
-    int socket_descriptor , client_sock , c , read_size;
+    int sock, socket_descriptor , client_sock , c , read_size;
+	int64_t socktype;
     struct sockaddr_in server , client;
-    char client_message[2017];
-     
-    //Socket erstellen je nach option
+	char client_message[2017];
+	
+	if(argc!=3){
+    	fprintf(stderr,"Falsche Anzahl an Argumenten.");
+    	return 1;
+    }
+    //Socket erstellen je nach option wie beim client
     if(argv[1][0]=='-'){
 		switch(argv[1][1]){
 			case 'U': 
-				socket_descriptor = socket(AF_UNIX , SOCK_STREAM , 0);
-				server.sin_family = AF_UNIX; //in quelle steht dass das immer AF:_INET sein soll?
+				sock = socket(AF_UNIX , SOCK_STREAM , 0);
+				server.sin_family = AF_LOCAL;
+				socktype = 0;
+				break;
 			case 'u': 
-				socket_descriptor = socket(AF_INET , SOCK_DGRAM , 0);
-				server.sin_family = AF_INET;
-
+				sock = socket(AF_INET , SOCK_DGRAM , 0);
+				server.sin_family = AF_LOCAL;
+				socktype = 1;
+				break;
 			case 't': 
-				socket_descriptor = socket(AF_INET , SOCK_STREAM , 0);
-				server.sin_family = AF_INET;
+				sock = socket(AF_INET , SOCK_STREAM , 0);
+				server.sin_family = AF_LOCAL;
+				socktype = 2;
+				break;
 
 			default: 
 				fprintf(stderr, "Keine gültige Option.\n");
 				return 2;
 		}
-    if (socket_descriptor == -1){
-        printf("Konnte kein socket erstellt werden");
+		if (sock == -1 || sock >0){
+			printf(stderr, "Konnte Socket nicht erstellen");
+			exit(1);
     }
-    puts("Socket erstellt");
+    printf("Socket wurde erstellt");
      
-    //wichtig für die socket Adresse in struc
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons( 8888 ); //8888 is port number
+    //wichtig für die socket Adresse in struct
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr(argv[2]);
+    server.sin_port = htons( 5555 );
      
     //Adresse an den Server binden
     if( bind(socket_descriptor,(struct sockaddr *)&server , sizeof(server)) < 0){
@@ -53,7 +65,7 @@ int main(int argc , char *argv[]){
     listen(socket_descriptor , 3);
      
     //Falls noch keine Eingabe da ist
-    puts("Warte auf Eingabe...");
+    puts("Warte auf Eingabe vom Client...");
     c = sizeof(struct sockaddr_in);
      
     //accept die Eingabe vom client
@@ -65,9 +77,7 @@ int main(int argc , char *argv[]){
     puts("Eingabe hat geklappt");
      
     //vom Client die nachricht bekommen:
-    // statt read ans write sendto and receivefrom ?
-    while( (read_size = recv(client_sock , client_message , 2017 , 0)) > 0 ){		//müssen unterscheiden ob wir link zur datei bekommen oder firekt text von stdin
-        //Client die Message zurückschicken (nur ein test für nächste woche)
+    while( (read_size = recv(client_sock , client_message , 2017 , 0)) > 0 ){
         write(client_sock , client_message , strlen(client_message));
     }
      
@@ -76,12 +86,9 @@ int main(int argc , char *argv[]){
         fflush(stdout);
     }
     else if(read_size == -1){
-        perror("übergabe der Nachricht ist fehlgeschlagen");
+        fprintf(stderr, "übergabe der Nachricht ist fehlgeschlagen");
     }
      
     return 0;
+    }
 }
-
-
-// Wir hatten Probleme den client wirklich mit dem Server zu verbinden bzw die richtige Adresse zu finden.
-// Quelle für die bearbeitung dieser Aufgabe ist http://www.linuxhowtos.org/C_C++/socket.htm

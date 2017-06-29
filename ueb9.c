@@ -54,35 +54,27 @@ int main(int argc , char *argv[]){
 	//checksumme berechnen
 	else{ 
 		file = fopen(argv[1] , "r+");	//open given file; 
-		fseek(file, 0L, SEEK_END); //bis zum ende gehen
-		long sz = ftell(file);//größe der datei durch jetzige position
+		int fd = fileno(file);
+		long sz = lseek(fd, 0, SEEK_END); //größe der datei (anzahl zeichen)
 		rewind(file); //zurück zum start des files
-		uint8_t message[sz];
+		uint8_t message[sz]; //nachricht ist array mit so vielen einträgen wie chars in file, jeder eintrag ist ein/e char/zahl
 		uint16_t i,c= 0;
 		newfp = fopen(strcat(argv[1],".crc"),"w+");
-		do{
+		if(newfp == NULL){
+			fprintf(stderr,"Error beim Öffnen der Datei.\n");
+			return 1;
+		}		
+		while(i<sz){
     	    c = fgetc(file);
-    	    if(feof(file)!=0){
-    	     	break;
-    	  	}
     	  	fputc(c,newfp);//kopieren inhalt in neue datei
 			message[i] = c;
 			i++;   
-		}while(1);
-		
-		/*alternative:
-		char *restrict messtring = malloc(1000000);
-		fread(messtring, 10000000, 1, file);
-		uint16_t message[strlen(messtring)];
-		for(uint16_t i; i<strlen(messtring); i++){
-			//wandeln string in array aus ints um 
-			message[i] = (uint16_t)(messtring[i]);
-		}*/
+		}
 		fprintf(newfp, "%-4.4"PRIx16"", crc(message,sizeof(message))); //-4.4 legen mindestens&höchstens 4 chars fest für hexzahl
-		fclose(file);
-		fclose(newfp);
-		//free(messtring);
 	}
+	
+	fclose(file);
+	fclose(newfp);
 	return 0;
 }
 

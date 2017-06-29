@@ -1,3 +1,4 @@
+#define _POSIX_SOURCE //für warning wegen fileno
 #include<stdio.h> 
 #include<string.h> 
 #include<stdlib.h> 
@@ -47,8 +48,7 @@ int main(int argc , char *argv[]){
 			remove(filename);
 		}
 		free(givencsstr);
-		fclose(file);
-		fclose(newfp);		
+		
 	}
 	
 	//checksumme berechnen
@@ -65,8 +65,8 @@ int main(int argc , char *argv[]){
 			return 1;
 		}		
 		while(i<sz){
-    	    c = fgetc(file);
-    	  	fputc(c,newfp);//kopieren inhalt in neue datei
+    	    		c = fgetc(file);
+    	  		fputc(c,newfp);//kopieren inhalt in neue datei
 			message[i] = c;
 			i++;   
 		}

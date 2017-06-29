@@ -1,61 +1,58 @@
 #include<stdio.h> 
 #include<string.h> 
 #include<stdlib.h> 
+#include<unistd.h>
 #include<inttypes.h>
 #include<stdbool.h>
 
 uint16_t crc(uint8_t message[], int nBytes);
 
 int main(int argc , char *argv[]){
-/*uint16_t test;
-printf("%d\n",test = crc((uint8_t*)"?~", 2));
-return 0;*/
 
 	if(argc!=2){
 		fprintf(stderr,"Falschen Anzahl an Argumenten.\n");
 		return 1;
 	}
 	FILE * file,*newfp; //file ist immer die normale datei und newfp die mit .crc also mit checksumme
-	if(strcmp(&argv[1][strlen(argv[1])-4],".crc")==0){ //checksumme prüfen
-		newfp = fopen(argv[1] , "r+");	//open given file; 
-		fseek(newfp, 0L, SEEK_END); //bis zum ende gehen
-		long sz = ftell(newfp);//größe der datei durch jetzige position
+	
+	//Checksumme prüfen und datei davon befreien
+	if(strcmp(&argv[1][strlen(argv[1])-4],".crc")==0){ 
+		newfp = fopen(argv[1] , "r+");	//open given file 8(.crc)
+		if(newfp == NULL){
+			fprintf(stderr,"Error beim Öffnen der Datei.\n");
+			return 1;
+		}		
+		int fd = fileno(newfp);
+		long sz = lseek(fd, 0, SEEK_END); //größe der datei (anzahl zeichen)
 		rewind(newfp); //zurück zum start des files
 		//nachricht lesen
-		uint8_t message[sz+1];
+		uint8_t message[sz-4]; //letzte 4 sind crc
 		uint16_t i,c= 0;
-		file = fopen(&argv[1][strlen(argv[1])-4],"w+");		
-		do{
-    	    if(ftell(newfp)==fseek(newfp, sz-4, SEEK_SET)){ //sind bei checksumme angekommen
-    	     	break;
-    	  	}
-    	    c = fgetc(file);
-    	  	fputc(c,newfp);//kopieren inhalt in neue datei
+		char *filename = argv[1];
+		filename[strlen(filename)-4] = '\0'; //letzte 4 Zeichen (.crc) wegschmeißen
+		file = fopen(filename,"w+");	//
+		char* givencsstr = malloc(5); //string checksumme
+		while(i<sz-4){
+   	    	c = fgetc(newfp);
+   	  		fputc(c,file);//kopieren inhalt in neue datei (ohne .crc)
 			message[i] = c;
-			i++;   
-		}while(1);
+			//printf("i=%u, message: %u\n",i,c);
+			i++; 
+		}
+		fgets(givencsstr,5,newfp);
 		uint16_t checksum = crc(message,sizeof(message));
-		//checksumme rauslesen
-		i = 0;
-		char givencsstr [4]; //string checksumme
-		do{
-    	    if(feof(file)!=0){
-    	     	break;
-    	  	}
-    	  	givencsstr[i] = (char)fgetc(file); //erstelle string der checksumme
-    	  	i++;
-		}while(1);	
-		
-		fclose(file);
-		fclose(newfp);
 		uint16_t givencs = (int)strtol(givencsstr, NULL, 16);       // number base 16
 		if(checksum != givencs){
-			fprintf(stderr,"Die gegebene Datei (%s) hatte eine falsche Checksumme. Die richtige lautet: %"PRIx16"\n",argv[1],checksum);
-			remove(&argv[1][strlen(argv[1])-4]);
+			fprintf(stderr,"Die gegebene Datei (%s) hatte eine falsche Checksumme (nämlich %"PRIx16"). Die richtige lautet: %"PRIx16"\n",argv[1],givencs,checksum);
+			remove(filename);
 		}
-		
+		free(givencsstr);
+		fclose(file);
+		fclose(newfp);		
 	}
-	else{ //checksumme berechnen
+	
+	//checksumme berechnen
+	else{ 
 		file = fopen(argv[1] , "r+");	//open given file; 
 		fseek(file, 0L, SEEK_END); //bis zum ende gehen
 		long sz = ftell(file);//größe der datei durch jetzige position

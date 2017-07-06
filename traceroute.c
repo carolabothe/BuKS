@@ -23,7 +23,41 @@ if(argc !=2){
 	fprintf(stderr, "Bitte genau ein Argument, das Ziel, eingeben.\n");
 	return 1;
 }
+// Sender (UDP) Socket initialisieren
+int sendsockfd = socket(PF_INET, SOCK_DGRAM, 0);
+// Empfänger (RAW) socket
+int recvsockfd = socket(PF_INET,SOCK_RAW,IPPROTO_ICMP);
 
+//Adresse des Ziels
+struct sockaddr_in target_addr;
+target_addr.sin_family = AF_INET; // IPv4
+target_addr.sin_addr.s_addr = inet_addr(argv[1]); //gegeben beim Aufruf
+target_addr.sin_port = htons((uint16_t)PORT); //gewählter Port, siehe oben
+
+//Schleife
+char buf[BUFF_SIZE];
+char* message = "Nachricht für tracroute";
+for(uint16_t hop = 1; hop <=30; hop++){
+	setsockopt(sendsockfd, IPPROTO_IP, IP_TTL, &hop, sizeof(hop));
+	sendto(sendsockfd, message, strlen(message), 0,
+                      (struct sockaddr*)&target_addr,
+				sizeof(&target_addr));
+	//richtige icmp von empfänger socket herausfinden und ausgeben
+	recvfrom(recvsockfd, buf, BUFF_SIZE, 0,NULL,NULL); //egal woher die Nachricht kommt
+	char* output= malloc(20);
+	inet_ntop(AF_INET,NULL,output,20); //umwandeln in string
+	printf("%i:\t%s\n",hop,output);
+	
+}
+//freeaddrinfo(servinfo);
+shutdown(sendsockfd, SHUT_RDWR);	
+shutdown(recvsockfd, SHUT_RDWR);
+return 0;
+}
+
+
+
+/* raw socket approach chaos:
 //adress info des empfängers
 const struct addrinfo *hints;
 struct addrinfo *destinfo;
@@ -35,35 +69,10 @@ int getaddrinfo(argv[1],     // e.g. "www.example.com" or IP
 int sendsockfd = socket(PF_INET, SOCK_RAW, 0);
 //paket machen und ausfüllen (instanz von struct IP-hdr)
 struct ip_hdr packageinfo;	//in ip.h
-const void *package;
-//empfänger spcket öffnen
-int recvsockfd = socket(PF_INET,SOCK_RAW,IPPROTO_ICMP);
+const void *message = "Dies ist eine traceroute Testnachricht.";
 
 struct sockaddr_in client_addr;
 client_addr.sin_addr = htonl(argv[1]);
 socklen_t client_addr_size = sizeof(struct sockaddr_in);
-//Schleife
-char buf[BUFF_SIZE];
-for(uint16_t hop = 1; hop <=30; hop++){
-	//paket senden mit richtiger ttl=hop
-sendto(sendsockfd, package, sizeof(package), 0,
-                      (struct sockaddr*)&client_addr,
-				&client_addr_size);
-	//richtige icmp von empfänger socket herausfinden und ausgeben
-recvfrom(recvsockfd, buf, BUFF_SIZE, 0,
-                      (struct sockaddr*)&client_addr,
-				&client_addr_size);
-char* output;
-inet_ntop(AF_INET,client_addr.sin_addr,output,20); //umwandeln in string
-printf("%i:\t%s\n",hop,output);
-
-	
-}
-freeaddrinfo(servinfo);
-shutdown(sendsockfd, SHUT_RDWR);	
-shutdown(recvsockfd, SHUT_RDWR);
-return 0;
-}
-
-
+*/
 

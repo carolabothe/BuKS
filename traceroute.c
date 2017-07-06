@@ -36,7 +36,8 @@ target_addr.sin_port = htons((uint16_t)PORT); //gewählter Port, siehe oben
 
 //Schleife
 char buf[BUFF_SIZE];
-char* message = "Nachricht für tracroute";
+char* message;
+message = "Nachricht für traceroute";
 for(uint16_t hop = 1; hop <=30; hop++){
 	setsockopt(sendsockfd, IPPROTO_IP, IP_TTL, &hop, sizeof(hop));
 	sendto(sendsockfd, message, strlen(message), 0,

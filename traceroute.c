@@ -13,15 +13,16 @@
 #define PORT		4242 //beides willkürlich
 #define BUFF_SIZE	1024
 
-//Das Programm tut ohne sudo leider gar nichts und hängt sich mit sudo auf.
-//Da es leider erst Donnerstag Abend fertig geworden ist, wussten wir irgendwie nicht, 
-// wie wir es im zedat netz testen sollen. Vielleicht klappt es ja trotzdem,
+//Das Programm tut ohne sudo leider gar nichts und hängt sich mit sudo auf(keine Ahnung 
+//wieso, es ist ja nirgendwo ne Endlosschleife) ohne nach einem pw zu fragen.
+//Da es leider erst Donnerstag Abend fertig geworden ist, wussten wir auch nicht, 
+//wie wir es im zedat netz testen sollen. Vielleicht klappt es ja trotzdem,
 //kompilieren tut es zumindest ohne warnings :)
 
 int main(int argc, char* argv[]) {
 
 if(argc !=2){
-	fprintf(stderr, "Bitte genau ein Argument, das Ziel, eingeben.\n");
+	fprintf(stderr, "Bitte genau ein Argument eingeben, das Ziel in Form einer IP Adresse.\n");
 	return 1;
 }
 // Sender (UDP) Socket initialisieren
@@ -42,7 +43,7 @@ char *message;
 message = "Nachricht für traceroute";
 ssize_t res;
 char *output = malloc(20);
-for(uint16_t hop = 1; hop <=30; hop++){
+for(uint16_t hop = 1; hop <=30; hop++){ //höchstens 30 hops (hop = TTL)
 	setsockopt(sendsockfd, IPPROTO_IP, IP_TTL, &hop, sizeof(hop));
 	sendto(sendsockfd, message, strlen(message), 0,
                       (struct sockaddr*)&target_addr,
@@ -60,9 +61,14 @@ for(uint16_t hop = 1; hop <=30; hop++){
 		free(output);
 		free(givenport);	
 	}
+	if(inet_ntoa(buf->sin_addr) == argv[1]){ //gleiche IP heißt, haben Ziel erreicht
+		printf("Ziel erreicht nach %i hops.\n",hop);		
+		break;
+	}
 }
 
 free(message);
+free(buf);
 fflush(stdout);
 shutdown(sendsockfd, SHUT_RDWR);	
 shutdown(recvsockfd, SHUT_RDWR);

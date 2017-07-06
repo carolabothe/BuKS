@@ -34,28 +34,51 @@ target_addr.sin_family = AF_INET; // IPv4
 target_addr.sin_addr.s_addr = inet_addr(argv[1]); //gegeben beim Aufruf
 target_addr.sin_port = htons((uint16_t)PORT); //gewählter Port, siehe oben
 
+
 //Schleife
-char buf[BUFF_SIZE];
-char* message;
+struct sockaddr_in *buf[BUFF_SIZE];
+char *message;
 message = "Nachricht für traceroute";
+ssize_t res;
+char *output = malloc(20);
 for(uint16_t hop = 1; hop <=30; hop++){
 	setsockopt(sendsockfd, IPPROTO_IP, IP_TTL, &hop, sizeof(hop));
 	sendto(sendsockfd, message, strlen(message), 0,
                       (struct sockaddr*)&target_addr,
 				sizeof(&target_addr));
 	//richtige icmp von empfänger socket herausfinden und ausgeben
-	recvfrom(recvsockfd, buf, BUFF_SIZE, 0,NULL,NULL); //egal woher die Nachricht kommt
-	char* output= malloc(20);
-	inet_ntop(AF_INET,NULL,output,20); //umwandeln in string
-	printf("%i:\t%s\n",hop,output);
 	
+	do {
+		res = recvfrom(recvsockfd, buf, BUFF_SIZE-1, 0,NULL,NULL); //egal woher die Nachricht kommt
+		if(res < 0) {
+			shutdown(recvsockfd, SHUT_RDWR);
+			return 1;
+		}
+		//text_buff[res] = 0; //brauchen wir nen nullterminator?
+	} while((size_t)res == BUFF_SIZE-1);
+
+	inet_ntop(AF_INET,&buf,output,20); //umwandeln in string (**)
+	printf("%i:\t%s\n",hop,output);
+	free(output);	
 }
 //freeaddrinfo(servinfo);
+free(message);
 shutdown(sendsockfd, SHUT_RDWR);	
 shutdown(recvsockfd, SHUT_RDWR);
 return 0;
 }
+/*
+**
+       const char *inet_ntop(int af, const void *src,
+                             char *dst, socklen_t size);
 
+DESCRIPTION
+       This function converts the network address structure src in  the
+       af address family into a character string.  The resulting string
+       is copied to the buffer pointed to by dst, which must be a  non-
+       null  pointer.   The caller specifies the number of bytes avail‐
+       able in this buffer in the argument size.
+*/
 
 
 /* raw socket approach chaos:
